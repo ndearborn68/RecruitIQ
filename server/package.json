@@ -1,0 +1,16 @@
+{
+  "name": "recruitiq-search-api",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Backend API for RecruitIQ web search using Claude",
+  "main": "search-api.js",
+  "scripts": {
+    "start": "node search-api.js",
+    "dev": "node --watch search-api.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.0",
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
+  }
+}
