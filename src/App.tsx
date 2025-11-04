@@ -1,1717 +1,1054 @@
 import { useState, useEffect } from 'react'
-import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { supabase, type Job } from './lib/supabase'
-import { OrchestratorAgent } from './agents/orchestrator'
 
-// Mock data with real LinkedIn profiles
-const mockLeads = [
+// ==================== SAMPLE DATA ====================
+
+// LinkedIn Posts Data
+const linkedinPosts = [
   {
     id: 1,
-    jobTitle: 'Senior Java Engineer',
-    company: 'Goldman Sachs',
-    location: 'New York, NY',
-    postedDate: '2025-10-15',
-    hiringManagers: [
-      { name: 'Konstantinos R.', title: 'Managing Director, Goldman Sachs Engineering', linkedin: 'https://www.linkedin.com/in/rizakos/' },
-      { name: 'James Colletti', title: 'Managing Director, Global Co-Head of PWM Engineering', linkedin: 'https://www.linkedin.com/in/james-colletti-1b46455/' }
-    ],
-    hrLeaders: [
-      { name: 'Jacqueline Arthur', title: 'Global Head of Human Capital Management', linkedin: 'https://www.linkedin.com/in/jacqueline-arthur-5b82576/' },
-      { name: 'Annie Yearwood', title: 'VP, Human Capital Management', linkedin: 'https://www.linkedin.com/in/annie-yearwood-2187901b/' }
-    ],
-    recruiters: [
-      { name: 'Joseph Dougherty', title: 'Senior Talent Acquisition Lead', linkedin: 'https://www.linkedin.com/in/joseph-dougherty-9bb20b158/' },
-      { name: 'Rekha Rajan', title: 'Talent Acquisition Specialist', linkedin: 'https://www.linkedin.com/in/rekharajan/' }
-    ],
-    emails: [
-      { email: 'konstantinos.r@gs.com', deliverability: 90, status: 'verified' },
-      { email: 'james.colletti@gs.com', deliverability: 90, status: 'verified' },
-      { email: 'jacqueline.arthur@gs.com', deliverability: 45, status: 'catch-all' }
-    ],
-    phones: [
-      { number: '+1-212-902-1000', verified: true },
-      { number: '+1-212-902-5500', verified: false }
-    ],
-    status: 'Active',
-    matchScore: 95
+    author: 'Sarah Chen',
+    authorTitle: 'VP of Engineering @ Stripe',
+    authorLinkedIn: 'https://linkedin.com/in/sarahchen',
+    company: 'Stripe',
+    postDate: '2025-11-02',
+    content: "Excited to announce we're expanding our Platform Engineering team! Looking for experienced engineers who are passionate about...",
+    engagement: { likes: 342, comments: 28, shares: 15 },
+    signals: ['Hiring Signal', 'Team Expansion'],
+    relevance: 95
   },
   {
     id: 2,
-    jobTitle: 'Lead Java Developer',
-    company: 'JP Morgan Chase',
-    location: 'Jersey City, NJ',
-    postedDate: '2025-10-14',
-    hiringManagers: [
-      { name: 'Gregory Hodges', title: 'Managing Director, Product and Software Engineering', linkedin: 'https://www.linkedin.com/in/gregory-hodges-100477100/' },
-      { name: 'Smitha Sreekantan', title: 'Executive Director, Engineering Lead on API Platform', linkedin: 'https://www.linkedin.com/in/smitha-sreekantan-127131a2/' }
-    ],
-    hrLeaders: [
-      { name: 'Robin Leopold', title: 'EVP, Head of Human Resources', linkedin: 'https://www.linkedin.com/in/robin-leopold-50a7b647/' },
-      { name: 'Julie Bohan', title: 'Managing Director - HR Executive', linkedin: 'https://www.linkedin.com/in/julie-bohan-2393947/' }
-    ],
-    recruiters: [
-      { name: 'Zach Werde', title: 'Senior Technical Recruiter - Cybersecurity', linkedin: 'https://www.linkedin.com/in/zachwerde/' },
-      { name: 'Timothy F. Hunt', title: 'Senior Associate, Technical Recruiter', linkedin: 'https://www.linkedin.com/in/timothyhuntjpmc/' }
-    ],
-    emails: [
-      { email: 'gregory.hodges@jpmorgan.com', deliverability: 90, status: 'verified' },
-      { email: 'robin.leopold@jpmchase.com', deliverability: 90, status: 'verified' },
-      { email: 'zach.werde@chase.com', deliverability: 45, status: 'catch-all' }
-    ],
-    phones: [
-      { number: '+1-212-270-6000', verified: true },
-      { number: '+1-201-354-9000', verified: true }
-    ],
-    status: 'Active',
-    matchScore: 92
+    author: 'Michael Rodriguez',
+    authorTitle: 'Chief Technology Officer @ Plaid',
+    authorLinkedIn: 'https://linkedin.com/in/mrodriguez',
+    company: 'Plaid',
+    postDate: '2025-11-01',
+    content: "After our Series D, we're doubling down on our infrastructure. Hiring 20+ engineers across backend, data, and platform teams...",
+    engagement: { likes: 589, comments: 45, shares: 32 },
+    signals: ['Funding Mention', 'Hiring Signal', 'Team Growth'],
+    relevance: 98
   },
   {
     id: 3,
-    jobTitle: 'Java Software Engineer',
-    company: 'Morgan Stanley',
-    location: 'New York, NY',
-    postedDate: '2025-10-12',
-    hiringManagers: [
-      { name: 'Jacob Thomas', title: 'Executive Director, Technology Incident Management', linkedin: 'https://www.linkedin.com/in/jacobthomasny/' },
-      { name: 'Sandeep Anand', title: 'Executive Director, Head of Engineering for Fixed Income', linkedin: 'https://www.linkedin.com/in/sandeep-anand-095159a/' }
-    ],
-    hrLeaders: [
-      { name: 'Mandell Crawley', title: 'Chief Client Officer (Former CHRO)', linkedin: 'https://www.linkedin.com/in/mandellcrawley/' },
-      { name: 'Jason Simmonds', title: 'Chief of Staff to CHRO', linkedin: 'https://www.linkedin.com/in/jason-simmonds-977610b/' }
-    ],
-    recruiters: [
-      { name: 'Mitch Brodsky', title: 'VP, Talent Acquisition', linkedin: 'https://www.linkedin.com/in/mitch-brodsky-697304101/' },
-      { name: 'Taryn O\'Sullivan', title: 'Director, Talent Acquisition', linkedin: 'https://www.linkedin.com/in/taryn-o-sullivan-4a9b3a7' }
-    ],
-    emails: [
-      { email: 'jacob.thomas@morganstanley.com', deliverability: 90, status: 'verified' },
-      { email: 'mandell.crawley@morganstanley.com', deliverability: 90, status: 'verified' },
-      { email: 'mitch.brodsky@morganstanley.com', deliverability: 45, status: 'catch-all' }
-    ],
-    phones: [
-      { number: '+1-212-761-4000', verified: true },
-      { number: '+1-212-761-0100', verified: false }
-    ],
-    status: 'Active',
-    matchScore: 88
-  },
-  {
-    id: 4,
-    jobTitle: 'Principal Java Engineer',
-    company: 'Citigroup',
-    location: 'New York, NY',
-    postedDate: '2025-10-10',
-    hiringManagers: [
-      { name: 'Jose Perez', title: 'Managing Director and COO, Personal Banking Technology', linkedin: 'https://www.linkedin.com/in/jose-perez-44187414/' },
-      { name: 'Denis Urusov', title: 'Managing Director, Financial Services Technology', linkedin: 'https://www.linkedin.com/in/durusov/' }
-    ],
-    hrLeaders: [
-      { name: 'Sara Wechter', title: 'Chief Human Resources Officer', linkedin: 'https://www.linkedin.com/in/sarawechter/' },
-      { name: 'Lynn Pettit', title: 'Director, Global HR Advisor', linkedin: 'https://www.linkedin.com/in/lynn-pettit-36053a7/' }
-    ],
-    recruiters: [
-      { name: 'Angie Backe', title: 'VP, Executive Recruiter', linkedin: 'https://www.linkedin.com/in/angie-backe-06949710/' },
-      { name: 'Bernard Frye', title: 'AVP, Talent Acquisition, Senior Recruiter', linkedin: 'https://www.linkedin.com/in/bernard-frye-07b7958/' }
-    ],
-    emails: [
-      { email: 'jose.perez@citi.com', deliverability: 90, status: 'verified' },
-      { email: 'sara.wechter@citi.com', deliverability: 90, status: 'verified' },
-      { email: 'angie.backe@citi.com', deliverability: 45, status: 'catch-all' }
-    ],
-    phones: [
-      { number: '+1-212-559-1000', verified: true },
-      { number: '+1-212-559-5000', verified: false }
-    ],
-    status: 'Filled',
-    matchScore: 85
+    author: 'Jennifer Wu',
+    authorTitle: 'Head of Talent Acquisition @ Databricks',
+    authorLinkedIn: 'https://linkedin.com/in/jenniferwu',
+    company: 'Databricks',
+    postDate: '2025-10-31',
+    content: "Big news! Databricks is opening a new engineering hub in NYC. We're looking for senior engineers to help build...",
+    engagement: { likes: 421, comments: 67, shares: 28 },
+    signals: ['Office Opening', 'Hiring Signal', 'Location Expansion'],
+    relevance: 92
   }
 ]
 
-const mockReverseEngineering = [
+// Fresh Open Jobs Data
+const freshOpenJobs = [
   {
     id: 1,
-    competitorAgency: 'TechStaff Solutions',
-    jobPosted: 'Senior Backend Developer - Financial Services',
-    location: 'Manhattan, NY',
-    analysisStatus: 'Complete',
-    confidence: 87,
-    identifiedClient: 'Bank of America',
-    matchingIndicators: [
-      'Exact location match (One Bryant Park)',
-      'Duplicate text in requirements (85% similarity)',
-      'Technology stack identical',
-      'Posting dates within 3 days'
-    ],
-    originalJobLink: 'https://careers.bankofamerica.com/...',
-    competitorLink: 'https://techstaff.com/jobs/...'
+    jobTitle: 'Senior Backend Engineer',
+    company: 'Stripe',
+    location: 'San Francisco, CA',
+    salary: '$180,000 - $250,000',
+    postedDate: '2025-11-03',
+    postedHoursAgo: 8,
+    jobUrl: 'https://stripe.com/jobs/listing/senior-backend-engineer',
+    department: 'Platform Engineering',
+    remote: 'Hybrid',
+    urgency: 'High'
   },
   {
     id: 2,
-    competitorAgency: 'Elite Recruiting Group',
-    jobPosted: 'Java Architect - Fintech',
-    location: 'NYC',
-    analysisStatus: 'In Progress',
-    confidence: 73,
-    identifiedClient: 'Stripe (Suspected)',
-    matchingIndicators: [
-      'Similar tech stack',
-      'Location proximity',
-      'Job description overlap (62%)'
+    jobTitle: 'Staff Software Engineer - Data Infrastructure',
+    company: 'Plaid',
+    location: 'New York, NY',
+    salary: '$200,000 - $280,000',
+    postedDate: '2025-11-03',
+    postedHoursAgo: 12,
+    jobUrl: 'https://plaid.com/careers/opening/data-engineer',
+    department: 'Data Platform',
+    remote: 'Remote',
+    urgency: 'High'
+  },
+  {
+    id: 3,
+    jobTitle: 'Principal Engineer - Distributed Systems',
+    company: 'Databricks',
+    location: 'New York, NY',
+    salary: '$220,000 - $320,000',
+    postedDate: '2025-11-02',
+    postedHoursAgo: 24,
+    jobUrl: 'https://databricks.com/company/careers/open-positions',
+    department: 'Core Infrastructure',
+    remote: 'Hybrid',
+    urgency: 'Medium'
+  },
+  {
+    id: 4,
+    jobTitle: 'Engineering Manager - Backend Services',
+    company: 'Coinbase',
+    location: 'Remote (US)',
+    salary: '$190,000 - $270,000',
+    postedDate: '2025-11-02',
+    postedHoursAgo: 30,
+    jobUrl: 'https://coinbase.com/careers',
+    department: 'Product Engineering',
+    remote: 'Remote',
+    urgency: 'Medium'
+  }
+]
+
+// Stakeholders & Hiring Managers Data
+const stakeholders = [
+  {
+    id: 1,
+    name: 'Sarah Chen',
+    title: 'VP of Engineering',
+    company: 'Stripe',
+    department: 'Engineering',
+    role: 'Hiring Manager',
+    linkedIn: 'https://linkedin.com/in/sarahchen',
+    email: 'sarah.chen@stripe.com',
+    emailStatus: 'verified',
+    emailDeliverability: 95,
+    phone: '+1-650-555-0123',
+    phoneVerified: true,
+    recentActivity: 'Posted about hiring 2 days ago',
+    influence: 'High'
+  },
+  {
+    id: 2,
+    name: 'Jennifer Wu',
+    title: 'Head of Talent Acquisition',
+    company: 'Databricks',
+    department: 'People/HR',
+    role: 'Recruiter',
+    linkedIn: 'https://linkedin.com/in/jenniferwu',
+    email: 'jennifer.wu@databricks.com',
+    emailStatus: 'verified',
+    emailDeliverability: 92,
+    phone: '+1-415-555-0198',
+    phoneVerified: true,
+    recentActivity: 'Announced NYC office opening 3 days ago',
+    influence: 'High'
+  },
+  {
+    id: 3,
+    name: 'Michael Rodriguez',
+    title: 'Chief Technology Officer',
+    company: 'Plaid',
+    department: 'Engineering',
+    role: 'Executive',
+    linkedIn: 'https://linkedin.com/in/mrodriguez',
+    email: 'michael.r@plaid.com',
+    emailStatus: 'verified',
+    emailDeliverability: 98,
+    phone: '+1-415-555-0247',
+    phoneVerified: true,
+    recentActivity: 'Mentioned Series D hiring 4 days ago',
+    influence: 'Very High'
+  },
+  {
+    id: 4,
+    name: 'David Park',
+    title: 'Director of Engineering',
+    company: 'Coinbase',
+    department: 'Engineering',
+    role: 'Hiring Manager',
+    linkedIn: 'https://linkedin.com/in/davidpark',
+    email: 'david.park@coinbase.com',
+    emailStatus: 'catch-all',
+    emailDeliverability: 68,
+    phone: '+1-650-555-0334',
+    phoneVerified: false,
+    recentActivity: 'Posted job opening 1 week ago',
+    influence: 'Medium'
+  }
+]
+
+// Website Job Monitoring Data
+const websiteMonitoring = [
+  {
+    id: 1,
+    company: 'Stripe',
+    careerPageUrl: 'https://stripe.com/jobs',
+    lastChecked: '2025-11-03 09:00 AM',
+    status: 'New Jobs Detected',
+    changes: [
+      { type: 'New Job Posted', title: 'Senior Backend Engineer', department: 'Platform Engineering', timestamp: '2025-11-03 08:00 AM' },
+      { type: 'New Job Posted', title: 'Staff Product Manager', department: 'Product', timestamp: '2025-11-03 06:30 AM' }
     ],
-    originalJobLink: 'https://stripe.com/jobs/...',
-    competitorLink: 'https://eliterg.com/...'
-  }
-]
-
-// Real NY/NJ/CT companies with LIVE verified job links (October 2025)
-const realCompanies = {
-  manufacturing: [
-    {
-      name: 'RTX (Pratt & Whitney)',
-      location: 'East Hartford, CT',
-      employees: 1000,
-      jobs: ['Supplier Manufacturing Engineer'],
-      jobLink: 'https://careers.rtx.com/global/en/job/01796139'
-    },
-    {
-      name: 'RTX (Pratt & Whitney)',
-      location: 'East Hartford, CT',
-      employees: 1000,
-      jobs: ['Principal Additive Mfg Engineer'],
-      jobLink: 'https://careers.rtx.com/global/en/job/01781156/Principal-Additive-Manufacturing-Process-Engineer'
-    }
-  ],
-  it: [
-    {
-      name: 'Shutterstock',
-      location: 'New York, NY',
-      employees: 1715,
-      jobs: ['Data Engineer, Analytics'],
-      jobLink: 'https://careers.shutterstock.com/us/en/job/R0003035/Data-Engineer-Analytics'
-    },
-    {
-      name: 'Gemini',
-      location: 'New York, NY',
-      employees: 586,
-      jobs: ['Staff Data Engineer'],
-      jobLink: 'https://job-boards.greenhouse.io/gemini/jobs/7254038'
-    },
-    {
-      name: 'Zocdoc',
-      location: 'New York, NY',
-      employees: 564,
-      jobs: ['Staff SWE, Data Infrastructure'],
-      jobLink: 'https://job-boards.greenhouse.io/zocdoc/jobs/6821794'
-    }
-  ],
-  finance: [
-    {
-      name: 'Datadog',
-      location: 'New York, NY',
-      employees: 7200,
-      jobs: ['Senior FP&A Analyst'],
-      jobLink: 'https://boards.greenhouse.io/datadog/jobs/7027764'
-    },
-    {
-      name: 'Squarespace',
-      location: 'New York, NY',
-      employees: 1739,
-      jobs: ['Senior Financial Analyst, Investments'],
-      jobLink: 'https://www.squarespace.com/careers/jobs/7195483?location=new-york'
-    }
-  ]
-}
-
-// Lead Activity Trend by Vertical (NY/NJ/CT companies, 500-1000 employees)
-const leadActivityByVertical = [
-  { month: 'Jun', Manufacturing: 18, 'Information Technology': 24, 'Finance & Accounting': 15 },
-  { month: 'Jul', Manufacturing: 22, 'Information Technology': 28, 'Finance & Accounting': 19 },
-  { month: 'Aug', Manufacturing: 26, 'Information Technology': 32, 'Finance & Accounting': 23 },
-  { month: 'Sep', Manufacturing: 31, 'Information Technology': 38, 'Finance & Accounting': 27 },
-  { month: 'Oct', Manufacturing: 35, 'Information Technology': 42, 'Finance & Accounting': 31 }
-]
-
-// Top Companies by Lead Volume (Real NY/NJ/CT companies with live jobs)
-const topCompaniesByLeads = [
-  { name: 'Shutterstock (IT)', location: 'NYC', value: 28 },
-  { name: 'Datadog (Finance)', location: 'NYC', value: 23 },
-  { name: 'Gemini (IT)', location: 'NYC', value: 18 },
-  { name: 'RTX Pratt & Whitney (Mfg)', location: 'East Hartford, CT', value: 15 },
-  { name: 'Squarespace (Finance)', location: 'NYC', value: 12 }
-]
-
-// Analytics data (for Talent Analytics tab)
-const candidateMovementData = [
-  { month: 'Jun', Oracle: 12, IBM: 8, Google: 15, Microsoft: 10 },
-  { month: 'Jul', Oracle: 15, IBM: 10, Google: 18, Microsoft: 12 },
-  { month: 'Aug', Oracle: 18, IBM: 12, Google: 20, Microsoft: 14 },
-  { month: 'Sep', Oracle: 20, IBM: 14, Google: 22, Microsoft: 16 },
-  { month: 'Oct', Oracle: 23, IBM: 16, Google: 25, Microsoft: 18 }
-]
-
-const companyTrendsData = [
-  { name: 'Oracle → Goldman Sachs', value: 28 },
-  { name: 'IBM → JP Morgan', value: 24 },
-  { name: 'Google → Morgan Stanley', value: 19 },
-  { name: 'Microsoft → Citigroup', value: 15 },
-  { name: 'Oracle → Bank of America', value: 12 }
-]
-
-const jobMonitoring = [
-  {
-    company: 'Goldman Sachs',
-    careerPageUrl: 'https://goldmansachs.com/careers',
-    lastChecked: '2025-10-19 08:30 AM',
-    status: 'Change Detected',
-    changes: [
-      { type: 'New Job', title: 'VP Java Engineer', dept: 'Technology', date: '2025-10-19' },
-      { type: 'Job Closed', title: 'Associate Developer', dept: 'Operations', date: '2025-10-18' }
-    ]
+    jobCount: 247,
+    previousJobCount: 245,
+    monitoring: 'Active'
   },
   {
-    company: 'JP Morgan Chase',
-    careerPageUrl: 'https://jpmorganchase.com/careers',
-    lastChecked: '2025-10-19 08:15 AM',
+    id: 2,
+    company: 'Databricks',
+    careerPageUrl: 'https://databricks.com/company/careers',
+    lastChecked: '2025-11-03 09:00 AM',
     status: 'No Changes',
-    changes: []
+    changes: [],
+    jobCount: 156,
+    previousJobCount: 156,
+    monitoring: 'Active'
   },
   {
-    company: 'Morgan Stanley',
-    careerPageUrl: 'https://morganstanley.com/careers',
-    lastChecked: '2025-10-19 08:00 AM',
-    status: 'Change Detected',
+    id: 3,
+    company: 'Plaid',
+    careerPageUrl: 'https://plaid.com/careers',
+    lastChecked: '2025-11-03 09:00 AM',
+    status: 'Jobs Removed',
     changes: [
-      { type: 'New Job', title: 'Senior Java Developer', dept: 'Wealth Management', date: '2025-10-19' }
-    ]
+      { type: 'Job Removed', title: 'Junior Software Engineer', department: 'Engineering', timestamp: '2025-11-02 04:00 PM' }
+    ],
+    jobCount: 89,
+    previousJobCount: 90,
+    monitoring: 'Active'
   }
 ]
 
+// Reverse Engineered Jobs Data
+const reverseEngineeredJobs = [
+  {
+    id: 1,
+    competitorAgency: 'TechStaff Solutions',
+    postedJobTitle: 'Senior Backend Developer - Fintech Client',
+    location: 'San Francisco, CA',
+    identifiedClient: 'Stripe',
+    confidence: 94,
+    matchIndicators: [
+      'Location match (exact address: 510 Townsend St)',
+      'Tech stack 95% match (Ruby, Go, PostgreSQL, Kubernetes)',
+      'Salary range identical ($180k-$250k)',
+      'Job description 89% similarity'
+    ],
+    competitorUrl: 'https://techstaff.com/jobs/backend-dev-fintech',
+    originalJobUrl: 'https://stripe.com/jobs/listing/senior-backend-engineer',
+    analysisDate: '2025-11-02',
+    status: 'Verified Match'
+  },
+  {
+    id: 2,
+    competitorAgency: 'Elite Recruiting Partners',
+    postedJobTitle: 'Data Infrastructure Engineer - Tech Startup',
+    location: 'New York, NY',
+    identifiedClient: 'Plaid (Suspected)',
+    confidence: 87,
+    matchIndicators: [
+      'Location proximity (NYC Financial District)',
+      'Tech stack overlap (Python, Kafka, Airflow)',
+      'Posting date within 2 days of original',
+      'Requirements 82% match'
+    ],
+    competitorUrl: 'https://eliterecruitingpartners.com/positions/data-eng',
+    originalJobUrl: 'https://plaid.com/careers/opening/data-engineer',
+    analysisDate: '2025-11-01',
+    status: 'High Probability'
+  }
+]
+
+// Job Changes & Executive Movements Data
+const jobChanges = [
+  {
+    id: 1,
+    person: 'Alex Thompson',
+    previousTitle: 'Director of Engineering',
+    newTitle: 'VP of Engineering',
+    previousCompany: 'Google',
+    newCompany: 'Stripe',
+    changeDate: '2025-10-28',
+    linkedIn: 'https://linkedin.com/in/alexthompson',
+    signal: 'Likely hiring for their former team',
+    relevance: 'High',
+    teamSize: 'Likely building 15-20 person team'
+  },
+  {
+    id: 2,
+    person: 'Maria Santos',
+    previousTitle: 'Senior Recruiter - Engineering',
+    newTitle: 'Head of Technical Recruiting',
+    previousCompany: 'Meta',
+    newCompany: 'Databricks',
+    changeDate: '2025-10-25',
+    linkedIn: 'https://linkedin.com/in/mariasantos',
+    signal: 'Major hiring push expected',
+    relevance: 'Very High',
+    teamSize: 'Building recruiting team of 5-8'
+  },
+  {
+    id: 3,
+    person: 'James Wilson',
+    previousTitle: 'Engineering Manager',
+    newTitle: 'Director of Engineering',
+    previousCompany: 'Uber',
+    newCompany: 'Coinbase',
+    changeDate: '2025-10-20',
+    linkedIn: 'https://linkedin.com/in/jameswilson',
+    signal: 'Team expansion likely',
+    relevance: 'Medium',
+    teamSize: 'Expanding from 8 to 15+ engineers'
+  }
+]
+
+// Funding Events Data
 const fundingEvents = [
   {
-    company: 'Brex',
+    id: 1,
+    company: 'Ramp',
     eventType: 'Series D',
     amount: '$300M',
-    date: '2025-10-15',
-    lead: 'Tiger Global',
-    valuation: '$12.3B',
-    industry: 'Fintech',
-    relevance: 'High'
-  },
-  {
-    company: 'Ramp',
-    eventType: 'Series C Extension',
-    amount: '$150M',
-    date: '2025-10-10',
-    lead: 'Founders Fund',
+    date: '2025-10-28',
+    lead: 'Thrive Capital',
     valuation: '$8.1B',
     industry: 'Fintech',
-    relevance: 'High'
+    postFundingSignals: [
+      'CEO announced 30% headcount growth',
+      '5 new job postings within 48 hours',
+      'Opening Austin office (15-20 hires expected)'
+    ],
+    hiringImpact: 'Very High',
+    estimatedHires: '50-75 in next 6 months'
   },
   {
-    company: 'Plaid',
-    eventType: 'Secondary Sale',
+    id: 2,
+    company: 'Anthropic',
+    eventType: 'Series C',
+    amount: '$450M',
+    date: '2025-10-15',
+    lead: 'Google',
+    valuation: '$15B',
+    industry: 'AI/ML',
+    postFundingSignals: [
+      'Announced research team doubling',
+      '12 engineering roles posted',
+      'Expanding SF and London offices'
+    ],
+    hiringImpact: 'Very High',
+    estimatedHires: '100+ in next 6 months'
+  },
+  {
+    id: 3,
+    company: 'Scale AI',
+    eventType: 'Series E Extension',
     amount: '$250M',
-    date: '2025-10-05',
-    lead: 'Altimeter Capital',
-    valuation: '$13.4B',
-    industry: 'Fintech',
-    relevance: 'Medium'
+    date: '2025-10-10',
+    lead: 'Accel',
+    valuation: '$13.8B',
+    industry: 'AI/ML',
+    postFundingSignals: [
+      'VP of Eng posted about team growth',
+      '8 new positions opened',
+      'Building ML Infrastructure team'
+    ],
+    hiringImpact: 'High',
+    estimatedHires: '40-60 in next 6 months'
   }
 ]
 
-const icpLookalikes = [
+// Company Events Data
+const companyEvents = [
   {
-    company: 'Affirm',
-    similarity: 94,
-    matchReasons: ['Fintech', 'Series G', '1000-5000 employees', 'Similar tech stack'],
-    employees: 2800,
-    location: 'San Francisco, CA',
-    fundingStage: 'Public',
-    techStack: ['Java', 'Python', 'AWS', 'Kubernetes']
+    id: 1,
+    company: 'Stripe',
+    eventType: 'Product Launch',
+    eventTitle: 'Stripe Banking-as-a-Service Platform Launch',
+    date: '2025-11-01',
+    description: 'Major new product line requiring significant engineering investment',
+    hiringSignals: [
+      'Job postings increased 40% in last week',
+      'VP of Eng posted about team expansion',
+      'New engineering org announced'
+    ],
+    impact: 'Very High',
+    estimatedHires: '30-40 engineers needed',
+    source: 'TechCrunch, Company Blog'
   },
   {
-    company: 'Chime',
-    similarity: 91,
-    matchReasons: ['Digital Banking', 'Series G', '1000-5000 employees', 'VC-backed'],
-    employees: 1500,
-    location: 'San Francisco, CA',
-    fundingStage: 'Series G',
-    techStack: ['Java', 'Go', 'GCP', 'Docker']
+    id: 2,
+    company: 'Databricks',
+    eventType: 'Office Opening',
+    eventTitle: 'New York Engineering Hub Opening',
+    date: '2025-10-30',
+    description: '20,000 sq ft office space for 100+ engineers',
+    hiringSignals: [
+      'Head of TA announced NYC hiring push',
+      '15 NYC-specific roles posted',
+      'Hiring event scheduled for Nov 15'
+    ],
+    impact: 'Very High',
+    estimatedHires: '50-75 engineers in first year',
+    source: 'LinkedIn, Company Careers Page'
   },
   {
-    company: 'Robinhood',
-    similarity: 89,
-    matchReasons: ['Fintech', 'Public', '1000-5000 employees', 'Financial services'],
-    employees: 3200,
-    location: 'Menlo Park, CA',
-    fundingStage: 'Public',
-    techStack: ['Python', 'Java', 'AWS', 'Terraform']
+    id: 3,
+    company: 'Coinbase',
+    eventType: 'Strategic Partnership',
+    eventTitle: 'Partnership with Visa for Crypto Payments',
+    date: '2025-10-22',
+    description: 'Integration project requiring specialized payment infrastructure team',
+    hiringSignals: [
+      'Posted 6 payment engineering roles',
+      'Engineering Manager hired from Visa',
+      'Team size growing 25%'
+    ],
+    impact: 'High',
+    estimatedHires: '15-25 engineers',
+    source: 'Press Release, LinkedIn'
   }
 ]
 
-const COLORS = ['#0ea5e9', '#d946ef', '#22c55e', '#f59e0b', '#ef4444']
+const COLORS = ['#0ea5e9', '#d946ef', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6']
+
+// ==================== MAIN COMPONENT ====================
 
 function App() {
-  const [activeTab, setActiveTab] = useState('overview')
-  const [liveJobs, setLiveJobs] = useState<Job[]>([])
-  const [loading, setLoading] = useState(true)
-  const [lastUpdated, setLastUpdated] = useState<Date>(new Date())
-
-  // Reverse Engineering state
-  const [jobUrl, setJobUrl] = useState('')
-  const [jobDescription, setJobDescription] = useState('')
-  const [isAnalyzing, setIsAnalyzing] = useState(false)
-  const [analysisProgress, setAnalysisProgress] = useState(0)
-  const [analysisStage, setAnalysisStage] = useState('')
-  const [analysisResults, setAnalysisResults] = useState<any>(null)
-
-  // Training Ground state
-  const [trainingStats, setTrainingStats] = useState({
-    jobsScraped: 0,
-    companiesDiscovered: 0,
-    uniquePhrases: 0,
-    locationsAnalyzed: 0
-  })
-
-  // Fetch jobs from Supabase
-  const fetchJobs = async () => {
-    setLoading(true)
-    try {
-      const { data, error } = await supabase
-        .from('jobs')
-        .select('*')
-        .order('last_verified', { ascending: false })
-
-      if (error) throw error
-      setLiveJobs(data || [])
-      setLastUpdated(new Date())
-    } catch (error) {
-      console.error('Error fetching jobs:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  // Fetch training stats
-  const fetchTrainingStats = async () => {
-    try {
-      // Get count of jobs scraped
-      const { count: jobCount, error: jobError } = await supabase
-        .from('jobs')
-        .select('*', { count: 'exact', head: true })
-
-      // Get count of qualified companies
-      const { count: companyCount, error: companyError } = await supabase
-        .from('qualified_companies')
-        .select('*', { count: 'exact', head: true })
-
-      // Get unique locations count
-      const { data: locations, error: locationError } = await supabase
-        .from('jobs')
-        .select('location')
-        .not('location', 'is', null)
-
-      const uniqueLocations = new Set(locations?.map(j => j.location) || []).size
-
-      if (!jobError && !companyError && !locationError) {
-        setTrainingStats({
-          jobsScraped: jobCount || 0,
-          companiesDiscovered: companyCount || 0,
-          uniquePhrases: Math.floor((jobCount || 0) * 0.3), // Estimate based on job count
-          locationsAnalyzed: uniqueLocations
-        })
-      }
-    } catch (error) {
-      console.error('Error fetching training stats:', error)
-    }
-  }
-
-  // Fetch jobs on mount
-  useEffect(() => {
-    fetchJobs()
-    fetchTrainingStats()
-  }, [])
-
-  // Reverse Engineering Analysis Function
-  const handleAnalyzeJob = async () => {
-    if (!jobDescription.trim() && !jobUrl.trim()) {
-      alert('Please enter a job URL or paste a job description')
-      return
-    }
-
-    setIsAnalyzing(true)
-    setAnalysisProgress(0)
-    setAnalysisResults(null)
-
-    try {
-      // Create orchestrator and run analysis
-      const orchestrator = new OrchestratorAgent()
-
-      const results = await orchestrator.analyze(
-        jobDescription,
-        jobUrl,
-        (stage: string, percentage: number) => {
-          setAnalysisStage(stage)
-          setAnalysisProgress(percentage)
-        }
-      )
-
-      // Set results
-      setAnalysisResults(results)
-
-      // Save to Supabase
-      try {
-        await supabase.from('job_analyses').insert({
-          job_description: jobDescription,
-          job_url: jobUrl || null,
-          identified_client: results.identifiedClient,
-          confidence: results.confidence,
-          match_percentage: results.matchPercentage,
-          reasoning: results.reasoning,
-          matched_job_url: results.matchedJobUrl,
-          created_at: new Date().toISOString()
-        })
-        console.log('✅ Analysis saved to Supabase')
-      } catch (dbError) {
-        console.error('Failed to save to Supabase:', dbError)
-        // Don't fail the whole analysis if DB save fails
-      }
-
-    } catch (error) {
-      console.error('Analysis error:', error)
-      setAnalysisStage('Error during analysis')
-      alert('Analysis failed. Please try again.')
-    } finally {
-      setIsAnalyzing(false)
-    }
-  }
-
-  const handleClearAnalysis = () => {
-    setJobUrl('')
-    setJobDescription('')
-    setIsAnalyzing(false)
-    setAnalysisProgress(0)
-    setAnalysisStage('')
-    setAnalysisResults(null)
-  }
-
-  // Group jobs by vertical for display
-  const groupedJobs = {
-    manufacturing: liveJobs.filter(job => job.vertical === 'Manufacturing'),
-    it: liveJobs.filter(job => job.vertical === 'IT'),
-    finance: liveJobs.filter(job => job.vertical === 'Finance')
-  }
+  const [activeTab, setActiveTab] = useState('all-data')
+  const [loading, setLoading] = useState(false)
+  const [lastUpdated] = useState<Date>(new Date())
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50">
-      {/* Navigation Sidebar */}
-      <div className="fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-gray-900 to-gray-800 shadow-2xl">
-        <div className="p-6">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent">
-            RecruitIQ
-          </h1>
-          <p className="text-gray-400 text-sm mt-1">Intelligence Dashboard</p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      {/* Top Navigation Bar */}
+      <div className="sticky top-0 z-50 bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 shadow-xl border-b-4 border-blue-500">
+        <div className="px-8 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                RecruitIQ Intelligence Platform
+              </h1>
+              <p className="text-slate-300 text-sm mt-1">AI-Powered Recruitment Data Blocks</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="text-sm text-slate-300">
+                <span className="inline-flex items-center gap-2">
+                  <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                  Live Data • Updated {lastUpdated.toLocaleTimeString()}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
-
-        <nav className="mt-8">
-          {[
-            { id: 'overview', label: 'Overview', icon: '📊' },
-            { id: 'leads', label: 'Lead Intelligence', icon: '🎯' },
-            { id: 'training', label: 'Training Ground', icon: '🎓' },
-            { id: 'analytics', label: 'Talent Analytics', icon: '📈' },
-            { id: 'monitoring', label: 'Job Monitoring', icon: '👁️' },
-            { id: 'funding', label: 'Funding Events', icon: '💰' },
-            { id: 'icp', label: 'ICP Lookalikes', icon: '🎭' }
-          ].map(item => (
-            <button
-              key={item.id}
-              onClick={() => setActiveTab(item.id)}
-              className={`w-full text-left px-6 py-3 transition-all duration-200 flex items-center gap-3 ${
-                activeTab === item.id
-                  ? 'bg-gradient-to-r from-primary-600 to-accent-600 text-white border-r-4 border-white'
-                  : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-              }`}
-            >
-              <span className="text-xl">{item.icon}</span>
-              <span className="font-medium">{item.label}</span>
-            </button>
-          ))}
-        </nav>
       </div>
 
       {/* Main Content */}
-      <div className="ml-64 p-8">
-        {/* Header */}
+      <div className="p-8 max-w-[1800px] mx-auto">
+        {/* Page Header with Description */}
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-800 mb-2">
-            {activeTab === 'overview' && 'Dashboard Overview'}
-            {activeTab === 'leads' && 'Lead Intelligence'}
-            {activeTab === 'reverse' && 'Reverse Engineering'}
-            {activeTab === 'analytics' && 'Talent Analytics'}
-            {activeTab === 'monitoring' && 'Job Monitoring'}
-            {activeTab === 'funding' && 'Funding Events'}
-            {activeTab === 'icp' && 'ICP Lookalike Companies'}
-          </h2>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 text-sm text-gray-500">
-              <span>Last updated: {lastUpdated.toLocaleString()}</span>
-              <span className="inline-flex items-center gap-1">
-                <span className="w-2 h-2 bg-success-500 rounded-full animate-pulse"></span>
-                Live from Supabase
-              </span>
+          <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
+            <h2 className="text-2xl font-bold text-slate-800 mb-3">📊 Data Intelligence Blocks</h2>
+            <p className="text-slate-600 text-lg leading-relaxed">
+              This dashboard delivers <strong>8 critical data streams</strong> for recruitment intelligence.
+              Each block below represents a different data source that we monitor and analyze in real-time.
+              Click on any card to explore detailed insights, verified contacts, and actionable hiring signals.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">8 Data Sources</span>
+              <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">Real-Time Updates</span>
+              <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium">AI-Powered Analysis</span>
+              <span className="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm font-medium">Verified Contacts</span>
             </div>
-            <button
-              onClick={fetchJobs}
-              disabled={loading}
-              className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-            >
-              <span>{loading ? '⟳' : '🔄'}</span>
-              {loading ? 'Refreshing...' : 'Refresh Jobs'}
-            </button>
           </div>
         </div>
 
-        {/* Overview Tab */}
-        {activeTab === 'overview' && (
-          <div className="space-y-6 animate-fade-in">
-            {/* KPI Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="card card-hover bg-gradient-to-br from-primary-500 to-primary-600 text-white">
-                <div className="text-sm font-medium opacity-90">Leads Delivered This Week</div>
-                <div className="text-4xl font-bold mt-2">96</div>
-                <div className="text-sm mt-2 opacity-80">↑ 18% from last week</div>
-              </div>
+        {/* Data Blocks Grid */}
+        <div className="space-y-8">
 
-              <div className="card card-hover bg-gradient-to-br from-accent-500 to-accent-600 text-white">
-                <div className="text-sm font-medium opacity-90">Jobs Analyzed</div>
-                <div className="text-4xl font-bold mt-2">1,342</div>
-                <div className="text-sm mt-2 opacity-80">↑ 18% from last week</div>
-              </div>
-
-              <div className="card card-hover bg-gradient-to-br from-success-500 to-success-600 text-white">
-                <div className="text-sm font-medium opacity-90">Match Rate</div>
-                <div className="text-4xl font-bold mt-2">87%</div>
-                <div className="text-sm mt-2 opacity-80">↑ 5% from last week</div>
-              </div>
-
-              <div className="card card-hover bg-gradient-to-br from-warning-500 to-warning-600 text-white">
-                <div className="text-sm font-medium opacity-90">New Opportunities</div>
-                <div className="text-4xl font-bold mt-2">56</div>
-                <div className="text-sm mt-2 opacity-80">↑ 12% from last week</div>
-              </div>
-            </div>
-
-            {/* Charts Row */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="card card-hover">
-                <h3 className="text-xl font-bold text-gray-800 mb-4">Lead Activity Trend by Industry</h3>
-                <p className="text-sm text-gray-600 mb-4">NY/NJ/CT companies (500-1,000 employees)</p>
-                <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={leadActivityByVertical}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey="Manufacturing" stroke="#f59e0b" strokeWidth={3} />
-                    <Line type="monotone" dataKey="Information Technology" stroke="#0ea5e9" strokeWidth={3} />
-                    <Line type="monotone" dataKey="Finance & Accounting" stroke="#22c55e" strokeWidth={3} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-
-              <div className="card card-hover">
-                <h3 className="text-xl font-bold text-gray-800 mb-4">Top Companies by Lead Volume</h3>
-                <p className="text-sm text-gray-600 mb-4">Real NY/NJ/CT companies actively hiring</p>
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={topCompaniesByLeads}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                      outerRadius={100}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {topCompaniesByLeads.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-
-            {/* Real Companies Breakdown */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Manufacturing Companies */}
-              <div className="card card-hover">
-                <h3 className="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
-                  <span className="text-2xl">🏭</span> Manufacturing
-                </h3>
-                <p className="text-sm text-gray-600 mb-4">{groupedJobs.manufacturing.length} companies tracked</p>
-                <div className="space-y-3">
-                  {groupedJobs.manufacturing.map((job, i) => (
-                    <a
-                      key={job.id}
-                      href={job.job_link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block bg-gradient-to-r from-warning-50 to-orange-50 p-3 rounded-lg border-l-4 border-warning-500 hover:shadow-md transition-shadow"
-                    >
-                      <div className="font-semibold text-gray-800 text-sm">{job.company_name}</div>
-                      <div className="text-xs text-gray-600 mt-1">{job.location} • {job.employee_count} employees</div>
-                      <div className="text-xs text-warning-700 mt-1 font-medium">Hiring: {job.job_title}</div>
-                      <div className="text-xs text-warning-600 mt-1 flex items-center gap-1">
-                        <span>🔗</span>
-                        <span className="underline">View Job Posting</span>
-                      </div>
-                    </a>
-                  ))}
+          {/* Block 1: LinkedIn Posts */}
+          <div className="bg-white rounded-xl shadow-xl border-2 border-blue-200 overflow-hidden transform transition-all hover:shadow-2xl">
+            <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="text-4xl">💼</span>
+                <div>
+                  <h3 className="text-2xl font-bold text-white">LinkedIn Posts & Hiring Signals</h3>
+                  <p className="text-blue-100 text-sm">Real-time monitoring of executive and recruiter activity</p>
                 </div>
               </div>
-
-              {/* IT Companies */}
-              <div className="card card-hover">
-                <h3 className="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
-                  <span className="text-2xl">💻</span> Information Technology
-                </h3>
-                <p className="text-sm text-gray-600 mb-4">{groupedJobs.it.length} companies tracked</p>
-                <div className="space-y-3">
-                  {groupedJobs.it.map((job) => (
-                    <a
-                      key={job.id}
-                      href={job.job_link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block bg-gradient-to-r from-primary-50 to-blue-50 p-3 rounded-lg border-l-4 border-primary-500 hover:shadow-md transition-shadow"
-                    >
-                      <div className="font-semibold text-gray-800 text-sm">{job.company_name}</div>
-                      <div className="text-xs text-gray-600 mt-1">{job.location} • {job.employee_count} employees</div>
-                      <div className="text-xs text-primary-700 mt-1 font-medium">Hiring: {job.job_title}</div>
-                      <div className="text-xs text-primary-600 mt-1 flex items-center gap-1">
-                        <span>🔗</span>
-                        <span className="underline">View Job Posting</span>
-                      </div>
-                    </a>
-                  ))}
-                </div>
-              </div>
-
-              {/* Finance Companies */}
-              <div className="card card-hover">
-                <h3 className="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
-                  <span className="text-2xl">💰</span> Finance & Accounting
-                </h3>
-                <p className="text-sm text-gray-600 mb-4">{groupedJobs.finance.length} companies tracked</p>
-                <div className="space-y-3">
-                  {groupedJobs.finance.map((job) => (
-                    <a
-                      key={job.id}
-                      href={job.job_link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block bg-gradient-to-r from-success-50 to-green-50 p-3 rounded-lg border-l-4 border-success-500 hover:shadow-md transition-shadow"
-                    >
-                      <div className="font-semibold text-gray-800 text-sm">{job.company_name}</div>
-                      <div className="text-xs text-gray-600 mt-1">{job.location} • {job.employee_count} employees</div>
-                      <div className="text-xs text-success-700 mt-1 font-medium">Hiring: {job.job_title}</div>
-                      <div className="text-xs text-success-600 mt-1 flex items-center gap-1">
-                        <span>🔗</span>
-                        <span className="underline">View Job Posting</span>
-                      </div>
-                    </a>
-                  ))}
-                </div>
-              </div>
+              <span className="px-4 py-2 bg-blue-500 text-white rounded-lg font-bold">{linkedinPosts.length} Posts</span>
             </div>
-          </div>
-        )}
-
-        {/* Leads Tab */}
-        {activeTab === 'leads' && (
-          <div className="space-y-6 animate-fade-in">
-            <div className="flex gap-4 mb-6">
-              <input
-                type="text"
-                placeholder="Search jobs, companies, or people..."
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-              />
-              <button className="btn-primary">🔍 Search</button>
-              <button className="btn-secondary">📥 Export</button>
-            </div>
-
-            <div className="space-y-4">
-              {mockLeads.map(lead => (
-                <div key={lead.id} className="card card-hover animate-slide-up">
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-xl font-bold text-gray-800">{lead.jobTitle}</h3>
-                        <span className={`badge ${lead.status === 'Active' ? 'badge-success' : 'badge-warning'}`}>
-                          {lead.status}
-                        </span>
-                        <span className="badge badge-primary">
-                          {lead.matchScore}% Match
-                        </span>
-                      </div>
-                      <div className="text-gray-600 flex items-center gap-2 mb-3">
-                        <span className="font-semibold text-primary-600">{lead.company}</span>
-                        <span>•</span>
-                        <span>{lead.location}</span>
-                        <span>•</span>
-                        <span>Posted {lead.postedDate}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div>
-                      <h4 className="font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                        <span>👤</span> Hiring Managers
-                      </h4>
-                      <ul className="space-y-2">
-                        {lead.hiringManagers.map((manager, i) => (
-                          <li key={i} className="ml-6">
-                            <a
-                              href={manager.linkedin}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-primary-600 hover:text-primary-800 hover:underline font-medium flex items-center gap-2"
-                            >
-                              <span>🔗</span>
-                              <div>
-                                <div>{manager.name}</div>
-                                <div className="text-xs text-gray-500 font-normal">{manager.title}</div>
-                              </div>
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-
-                      <h4 className="font-semibold text-gray-700 mt-4 mb-2 flex items-center gap-2">
-                        <span>🏢</span> HR Leaders
-                      </h4>
-                      <ul className="space-y-2">
-                        {lead.hrLeaders.map((hr, i) => (
-                          <li key={i} className="ml-6">
-                            <a
-                              href={hr.linkedin}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-primary-600 hover:text-primary-800 hover:underline font-medium flex items-center gap-2"
-                            >
-                              <span>🔗</span>
-                              <div>
-                                <div>{hr.name}</div>
-                                <div className="text-xs text-gray-500 font-normal">{hr.title}</div>
-                              </div>
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-
-                      <h4 className="font-semibold text-gray-700 mt-4 mb-2 flex items-center gap-2">
-                        <span>🎯</span> Recruiters
-                      </h4>
-                      <ul className="space-y-2">
-                        {lead.recruiters.map((recruiter, i) => (
-                          <li key={i} className="ml-6">
-                            <a
-                              href={recruiter.linkedin}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-primary-600 hover:text-primary-800 hover:underline font-medium flex items-center gap-2"
-                            >
-                              <span>🔗</span>
-                              <div>
-                                <div>{recruiter.name}</div>
-                                <div className="text-xs text-gray-500 font-normal">{recruiter.title}</div>
-                              </div>
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div>
-                      <h4 className="font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                        <span>✉️</span> Email & Deliverability
-                      </h4>
-                      <div className="space-y-2">
-                        {lead.emails.map((emailObj, i) => (
-                          <div key={i} className={`${
-                            emailObj.status === 'verified'
-                              ? 'bg-success-50 border-l-4 border-success-500'
-                              : 'bg-warning-50 border-l-4 border-warning-500'
-                          } px-3 py-2 rounded-lg text-sm`}>
-                            <div className="flex items-center justify-between mb-1">
-                              <span className="font-mono text-gray-800">{emailObj.email}</span>
-                              <button className="text-primary-600 hover:text-primary-800">📋</button>
-                            </div>
-                            <div className="flex items-center gap-2 text-xs">
-                              <span className={`font-semibold ${
-                                emailObj.status === 'verified' ? 'text-success-700' : 'text-warning-700'
-                              }`}>
-                                {emailObj.status === 'verified' ? '✓ Verified Email' : '⚠ Catch-all Risky Email'}
-                              </span>
-                              <span className="text-gray-500">•</span>
-                              <span className={`font-bold ${
-                                emailObj.deliverability >= 80 ? 'text-success-600' : 'text-warning-600'
-                              }`}>
-                                {emailObj.deliverability}% Deliverability
-                              </span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-
-                      <h4 className="font-semibold text-gray-700 mt-4 mb-2 flex items-center gap-2">
-                        <span>📞</span> Phone Numbers
-                      </h4>
-                      <div className="space-y-2">
-                        {lead.phones.map((phoneObj, i) => (
-                          <div key={i} className={`${
-                            phoneObj.verified
-                              ? 'bg-success-50 border-l-4 border-success-500'
-                              : 'bg-gray-50 border-l-4 border-gray-400'
-                          } px-3 py-2 rounded-lg text-sm`}>
-                            <div className="flex items-center justify-between mb-1">
-                              <span className="font-mono text-gray-800">{phoneObj.number}</span>
-                              <button className="text-primary-600 hover:text-primary-800">📋</button>
-                            </div>
-                            <div className="text-xs">
-                              <span className={`font-semibold ${
-                                phoneObj.verified ? 'text-success-700' : 'text-gray-600'
-                              }`}>
-                                {phoneObj.verified ? '✓ Phone Number Verified' : '✗ Phone Number Not Verified'}
-                              </span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 pt-4 border-t border-gray-200 flex gap-3">
-                    <button className="btn-primary flex-1">View Full Details</button>
-                    <button className="btn-secondary">Save to CRM</button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Reverse Engineering Tab - REMOVED */}
-        {false && activeTab === 'reverse' && (
-          <div className="space-y-6 animate-fade-in">
-            <div className="card bg-gradient-to-r from-primary-500 to-accent-500 text-white">
-              <h3 className="text-xl font-bold mb-2">🔍 AI-Powered Job Reverse Engineering</h3>
-              <p className="opacity-90">
-                Our AI agent analyzes competitor staffing agency job posts to identify the real end client by cross-referencing
-                language, location, job descriptions, and duties across the web.
-              </p>
-            </div>
-
-            <div className="card">
-              <div className="mb-6">
-                <div className="text-4xl mb-4 text-center">🤖</div>
-                <h3 className="text-2xl font-bold text-gray-800 mb-2 text-center">Job Reverse Engineering</h3>
-                <p className="text-gray-600 text-center mb-6">
-                  Paste a job URL or the full job description text below to identify the real end client
+            <div className="p-6">
+              <div className="mb-4 bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+                <p className="text-sm text-slate-700">
+                  <strong>What this shows:</strong> Recent LinkedIn activity from hiring managers, executives, and recruiters
+                  mentioning team growth, new roles, or hiring initiatives. These are strong early signals before jobs are posted.
                 </p>
               </div>
-
               <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Job URL (Optional)
-                  </label>
-                  <input
-                    type="text"
-                    value={jobUrl}
-                    onChange={(e) => setJobUrl(e.target.value)}
-                    disabled={isAnalyzing}
-                    placeholder="https://competitor-site.com/job/12345"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">Enter the URL of the competitor's job posting</p>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <div className="flex-1 border-t border-gray-300"></div>
-                  <span className="text-sm text-gray-500 font-medium">OR</span>
-                  <div className="flex-1 border-t border-gray-300"></div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Job Description Text
-                  </label>
-                  <textarea
-                    rows={12}
-                    value={jobDescription}
-                    onChange={(e) => setJobDescription(e.target.value)}
-                    disabled={isAnalyzing}
-                    placeholder="Paste the full job description here...
-
-Example:
-Senior Backend Developer - Financial Services
-Location: Manhattan, NY
-Salary: $150,000 - $200,000
-
-We are seeking a Senior Backend Developer to join our team...
-Requirements:
-- 5+ years of experience with Java
-- Experience with Spring Boot
-- Strong understanding of microservices architecture
-..."
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 font-mono text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">Paste the complete job description including title, location, salary, requirements, etc.</p>
-                </div>
-
-                <div className="flex gap-3 pt-4">
-                  <button
-                    onClick={handleAnalyzeJob}
-                    disabled={isAnalyzing}
-                    className="btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isAnalyzing ? '⏳ Analyzing...' : '🔍 Analyze Job & Identify Client'}
-                  </button>
-                  <button
-                    onClick={handleClearAnalysis}
-                    disabled={isAnalyzing}
-                    className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Clear
-                  </button>
-                </div>
-              </div>
-
-              {!isAnalyzing && !analysisResults && (
-                <div className="mt-6 p-4 bg-blue-50 border-l-4 border-blue-500 rounded">
-                  <div className="flex items-start gap-3">
-                    <span className="text-blue-600 text-xl">💡</span>
-                    <div>
-                      <h4 className="font-semibold text-blue-900 mb-1">How it works</h4>
-                      <ul className="text-sm text-blue-800 space-y-1">
-                        <li>• Our AI analyzes job descriptions from competitor staffing agencies</li>
-                        <li>• Cross-references language, location, tech stack, and requirements</li>
-                        <li>• Identifies the real end client with confidence scoring</li>
-                        <li>• Provides matching indicators and evidence</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Progress Indicator */}
-              {isAnalyzing && (
-                <div className="mt-6 p-6 bg-gradient-to-r from-primary-50 to-accent-50 border-2 border-primary-200 rounded-lg">
-                  <div className="flex items-center justify-center mb-4">
-                    <div className="relative w-32 h-32">
-                      <svg className="transform -rotate-90 w-32 h-32">
-                        <circle
-                          cx="64"
-                          cy="64"
-                          r="56"
-                          stroke="#e5e7eb"
-                          strokeWidth="8"
-                          fill="none"
-                        />
-                        <circle
-                          cx="64"
-                          cy="64"
-                          r="56"
-                          stroke="url(#gradient)"
-                          strokeWidth="8"
-                          fill="none"
-                          strokeDasharray={`${2 * Math.PI * 56}`}
-                          strokeDashoffset={`${2 * Math.PI * 56 * (1 - analysisProgress / 100)}`}
-                          strokeLinecap="round"
-                          className="transition-all duration-500"
-                        />
-                        <defs>
-                          <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stopColor="#0ea5e9" />
-                            <stop offset="100%" stopColor="#d946ef" />
-                          </linearGradient>
-                        </defs>
-                      </svg>
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-3xl font-bold text-gray-800">{analysisProgress}%</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="text-center">
-                    <div className="text-lg font-semibold text-gray-800 mb-2">{analysisStage}</div>
-                    <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
-                      <div
-                        className="bg-gradient-to-r from-primary-500 to-accent-500 h-2 rounded-full transition-all duration-500"
-                        style={{ width: `${analysisProgress}%` }}
-                      ></div>
-                    </div>
-                    <p className="text-sm text-gray-600">This may take 2-5 minutes for a thorough analysis...</p>
-                  </div>
-                </div>
-              )}
-
-              {/* Results Display */}
-              {analysisResults && !isAnalyzing && (
-                <div className="mt-6 space-y-4 animate-fade-in">
-                  {/* Main Result Card */}
-                  <div className="card bg-gradient-to-r from-success-50 to-primary-50 border-2 border-success-500">
-                    <div className="flex items-center justify-between mb-4">
-                      <div>
-                        <h3 className="text-2xl font-bold text-gray-800 mb-1">
-                          🎯 Identified Client: {analysisResults.identifiedClient}
-                        </h3>
-                        <p className="text-sm text-gray-600">Analysis completed on {new Date(analysisResults.analysisDate).toLocaleString()}</p>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-5xl font-bold text-success-600">{analysisResults.matchPercentage}%</div>
-                        <div className="text-sm text-gray-600 mt-1">Match Confidence</div>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-4 border-t border-success-200">
-                      <a
-                        href={analysisResults.matchedJobUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-primary-600 hover:underline text-sm flex items-center gap-2"
-                      >
-                        <span>🔗</span>
-                        <span>View Original Job Posting</span>
-                      </a>
-                      {analysisResults.competitorUrl !== 'N/A' && (
-                        <a
-                          href={analysisResults.competitorUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-accent-600 hover:underline text-sm flex items-center gap-2"
-                        >
-                          <span>🔗</span>
-                          <span>View Competitor Posting</span>
-                        </a>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Detailed Reasoning */}
-                  <div className="card">
-                    <h4 className="text-xl font-bold text-gray-800 mb-4">📊 Detailed Match Analysis</h4>
-                    <div className="space-y-4">
-                      {analysisResults.reasoning.map((item: any, i: number) => (
-                        <div key={i} className="border-l-4 border-primary-500 bg-primary-50 p-4 rounded-r-lg">
-                          <div className="flex items-center justify-between mb-2">
-                            <h5 className="font-bold text-gray-800">{item.category}</h5>
-                            <div className="flex items-center gap-2">
-                              <div className="w-32 bg-gray-200 rounded-full h-2">
-                                <div
-                                  className={`h-2 rounded-full ${
-                                    item.score >= 90 ? 'bg-success-500' :
-                                    item.score >= 75 ? 'bg-primary-500' :
-                                    item.score >= 60 ? 'bg-warning-500' : 'bg-gray-400'
-                                  }`}
-                                  style={{ width: `${item.score}%` }}
-                                ></div>
-                              </div>
-                              <span className="font-bold text-gray-700 min-w-[3rem] text-right">{item.score}%</span>
-                            </div>
-                          </div>
-                          <p className="text-sm text-gray-700">{item.details}</p>
+                {linkedinPosts.map(post => (
+                  <div key={post.id} className="border border-slate-200 rounded-lg p-5 hover:border-blue-400 transition-colors bg-slate-50">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-start gap-4">
+                        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold text-lg">
+                          {post.author.split(' ').map(n => n[0]).join('')}
                         </div>
-                      ))}
+                        <div>
+                          <a href={post.authorLinkedIn} target="_blank" rel="noopener noreferrer"
+                             className="font-bold text-lg text-slate-800 hover:text-blue-600">
+                            {post.author}
+                          </a>
+                          <div className="text-sm text-slate-600">{post.authorTitle}</div>
+                          <div className="text-xs text-slate-500 mt-1">{post.company} • Posted {post.postDate}</div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-2xl font-bold text-green-600">{post.relevance}%</div>
+                        <div className="text-xs text-slate-500">Relevance</div>
+                      </div>
                     </div>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="flex gap-3">
-                    <button className="btn-primary flex-1">Save Analysis</button>
-                    <button onClick={handleClearAnalysis} className="btn-secondary">New Analysis</button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Analytics Tab */}
-        {activeTab === 'analytics' && (
-          <div className="space-y-6 animate-fade-in">
-            <div className="card card-hover">
-              <h3 className="text-xl font-bold text-gray-800 mb-4">Candidate Movement Trends</h3>
-              <p className="text-gray-600 mb-6">
-                Track where candidates are moving from and to. This chart shows hiring trends from Oracle to various financial institutions.
-              </p>
-              <ResponsiveContainer width="100%" height={400}>
-                <BarChart data={candidateMovementData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="Oracle" fill="#0ea5e9" />
-                  <Bar dataKey="IBM" fill="#d946ef" />
-                  <Bar dataKey="Google" fill="#22c55e" />
-                  <Bar dataKey="Microsoft" fill="#f59e0b" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-
-            <div className="card card-hover">
-              <h3 className="text-xl font-bold text-gray-800 mb-4">Company-to-Company Movement</h3>
-              <div className="space-y-4">
-                {companyTrendsData.map((trend, i) => (
-                  <div key={i} className="flex items-center gap-4">
-                    <div className="w-48 font-semibold text-gray-700">{trend.name}</div>
-                    <div className="flex-1 bg-gray-200 rounded-full h-8 relative overflow-hidden">
-                      <div
-                        className="h-full bg-gradient-to-r from-primary-500 to-accent-500 rounded-full flex items-center justify-end pr-3 text-white font-bold"
-                        style={{ width: `${(trend.value / 30) * 100}%` }}
-                      >
-                        {trend.value} moves
+                    <div className="mb-3 text-slate-700 leading-relaxed bg-white p-4 rounded border border-slate-200">
+                      "{post.content}"
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex gap-4 text-sm text-slate-600">
+                        <span>👍 {post.engagement.likes}</span>
+                        <span>💬 {post.engagement.comments}</span>
+                        <span>🔄 {post.engagement.shares}</span>
+                      </div>
+                      <div className="flex gap-2">
+                        {post.signals.map((signal, i) => (
+                          <span key={i} className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                            {signal}
+                          </span>
+                        ))}
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
+          </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="card card-hover text-center">
-                <div className="text-4xl mb-2">🔄</div>
-                <div className="text-3xl font-bold text-primary-600">84</div>
-                <div className="text-gray-600 mt-1">Candidates Open to Work</div>
+          {/* Block 2: Fresh Open Jobs */}
+          <div className="bg-white rounded-xl shadow-xl border-2 border-green-200 overflow-hidden transform transition-all hover:shadow-2xl">
+            <div className="bg-gradient-to-r from-green-600 to-green-700 px-6 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="text-4xl">🆕</span>
+                <div>
+                  <h3 className="text-2xl font-bold text-white">Fresh Open Jobs (Last 48 Hours)</h3>
+                  <p className="text-green-100 text-sm">Newly posted positions from target companies</p>
+                </div>
               </div>
-              <div className="card card-hover text-center">
-                <div className="text-4xl mb-2">📊</div>
-                <div className="text-3xl font-bold text-accent-600">67%</div>
-                <div className="text-gray-600 mt-1">Movement from Oracle</div>
+              <span className="px-4 py-2 bg-green-500 text-white rounded-lg font-bold">{freshOpenJobs.length} Jobs</span>
+            </div>
+            <div className="p-6">
+              <div className="mb-4 bg-green-50 border-l-4 border-green-500 p-4 rounded">
+                <p className="text-sm text-slate-700">
+                  <strong>What this shows:</strong> Jobs posted in the last 48 hours from companies matching your ICP.
+                  Early awareness gives you a competitive advantage to reach out first.
+                </p>
               </div>
-              <div className="card card-hover text-center">
-                <div className="text-4xl mb-2">⚡</div>
-                <div className="text-3xl font-bold text-success-600">23</div>
-                <div className="text-gray-600 mt-1">Active Transitions This Week</div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {freshOpenJobs.map(job => (
+                  <div key={job.id} className="border border-slate-200 rounded-lg p-5 hover:border-green-400 transition-colors bg-slate-50">
+                    <div className="flex items-start justify-between mb-3">
+                      <div>
+                        <div className="flex items-center gap-2 mb-2">
+                          <h4 className="font-bold text-lg text-slate-800">{job.jobTitle}</h4>
+                          {job.urgency === 'High' && (
+                            <span className="px-2 py-1 bg-red-100 text-red-700 rounded text-xs font-bold">🔥 URGENT</span>
+                          )}
+                        </div>
+                        <div className="text-sm font-semibold text-blue-600">{job.company}</div>
+                      </div>
+                    </div>
+                    <div className="space-y-2 text-sm text-slate-600 mb-4">
+                      <div className="flex items-center gap-2">
+                        <span>📍</span>
+                        <span>{job.location} ({job.remote})</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span>💰</span>
+                        <span className="font-semibold text-green-600">{job.salary}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span>🏢</span>
+                        <span>{job.department}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span>⏰</span>
+                        <span className="font-semibold text-orange-600">Posted {job.postedHoursAgo} hours ago</span>
+                      </div>
+                    </div>
+                    <a href={job.jobUrl} target="_blank" rel="noopener noreferrer"
+                       className="block w-full text-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium">
+                      View Job Posting →
+                    </a>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
-        )}
 
-        {/* Job Monitoring Tab */}
-        {activeTab === 'monitoring' && (
-          <div className="space-y-6 animate-fade-in">
-            {jobMonitoring.map((monitor, i) => (
-              <div key={i} className="card card-hover animate-slide-up">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-xl font-bold text-gray-800">{monitor.company}</h3>
-                      <span className={`badge ${monitor.status === 'Change Detected' ? 'badge-warning' : 'badge-success'}`}>
-                        {monitor.status}
-                      </span>
-                    </div>
-                    <div className="text-sm text-gray-600 mb-1">
-                      <span className="font-semibold">Career Page:</span>
-                      <a href={monitor.careerPageUrl} className="text-primary-600 hover:underline ml-2">
-                        {monitor.careerPageUrl}
-                      </a>
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      Last checked: {monitor.lastChecked}
-                    </div>
-                  </div>
+          {/* Block 3: Stakeholders & Hiring Managers */}
+          <div className="bg-white rounded-xl shadow-xl border-2 border-purple-200 overflow-hidden transform transition-all hover:shadow-2xl">
+            <div className="bg-gradient-to-r from-purple-600 to-purple-700 px-6 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="text-4xl">👥</span>
+                <div>
+                  <h3 className="text-2xl font-bold text-white">Verified Stakeholders & Hiring Managers</h3>
+                  <p className="text-purple-100 text-sm">Decision makers with verified contact information</p>
                 </div>
-
-                {monitor.changes.length > 0 && (
-                  <div className="space-y-2 mt-4">
-                    <h4 className="font-semibold text-gray-700">Recent Changes:</h4>
-                    {monitor.changes.map((change, j) => (
-                      <div key={j} className={`p-3 rounded-lg border-l-4 ${
-                        change.type === 'New Job'
-                          ? 'bg-success-50 border-success-500'
-                          : 'bg-warning-50 border-warning-500'
-                      }`}>
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold">
-                            {change.type === 'New Job' ? '✅' : '❌'}
-                          </span>
-                          <span className="font-semibold">{change.type}:</span>
-                          <span className="text-gray-800">{change.title}</span>
+              </div>
+              <span className="px-4 py-2 bg-purple-500 text-white rounded-lg font-bold">{stakeholders.length} Contacts</span>
+            </div>
+            <div className="p-6">
+              <div className="mb-4 bg-purple-50 border-l-4 border-purple-500 p-4 rounded">
+                <p className="text-sm text-slate-700">
+                  <strong>What this shows:</strong> Key decision makers, hiring managers, and recruiters with <strong>verified emails and phone numbers</strong>.
+                  Each contact includes deliverability scores so you know which emails are safe to use.
+                </p>
+              </div>
+              <div className="space-y-4">
+                {stakeholders.map(person => (
+                  <div key={person.id} className="border border-slate-200 rounded-lg p-5 hover:border-purple-400 transition-colors bg-slate-50">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      <div>
+                        <div className="flex items-start gap-4 mb-4">
+                          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center text-white font-bold text-xl">
+                            {person.name.split(' ').map(n => n[0]).join('')}
+                          </div>
+                          <div>
+                            <a href={person.linkedIn} target="_blank" rel="noopener noreferrer"
+                               className="font-bold text-xl text-slate-800 hover:text-purple-600 flex items-center gap-2">
+                              {person.name} 🔗
+                            </a>
+                            <div className="text-sm text-slate-600 font-medium">{person.title}</div>
+                            <div className="text-sm text-slate-500">{person.company} • {person.department}</div>
+                            <div className="mt-2 flex gap-2">
+                              <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs font-medium">
+                                {person.role}
+                              </span>
+                              <span className={`px-2 py-1 rounded text-xs font-medium ${
+                                person.influence === 'Very High' ? 'bg-red-100 text-red-700' :
+                                person.influence === 'High' ? 'bg-orange-100 text-orange-700' :
+                                'bg-yellow-100 text-yellow-700'
+                              }`}>
+                                {person.influence} Influence
+                              </span>
+                            </div>
+                          </div>
                         </div>
-                        <div className="text-sm text-gray-600 ml-6">
-                          {change.dept} • {change.date}
+                        <div className="bg-blue-50 border-l-4 border-blue-400 p-3 rounded text-sm text-slate-700">
+                          <strong>Recent Activity:</strong> {person.recentActivity}
                         </div>
                       </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-
-            <div className="card bg-gray-50 border-2 border-dashed border-gray-300">
-              <div className="text-center py-8">
-                <div className="text-4xl mb-3">👁️</div>
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">Add New Monitor</h3>
-                <p className="text-gray-600 mb-4">Track career page changes for any company</p>
-                <div className="flex gap-3 max-w-2xl mx-auto">
-                  <input
-                    type="text"
-                    placeholder="Company name or career page URL..."
-                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  />
-                  <button className="btn-primary">Start Monitoring</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Funding Events Tab */}
-        {activeTab === 'funding' && (
-          <div className="space-y-6 animate-fade-in">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-              <div className="card card-hover text-center bg-gradient-to-br from-success-500 to-success-600 text-white">
-                <div className="text-4xl mb-2">💰</div>
-                <div className="text-3xl font-bold">$700M</div>
-                <div className="mt-1 opacity-90">Total Raised This Month</div>
-              </div>
-              <div className="card card-hover text-center bg-gradient-to-br from-primary-500 to-primary-600 text-white">
-                <div className="text-4xl mb-2">🏢</div>
-                <div className="text-3xl font-bold">12</div>
-                <div className="mt-1 opacity-90">Companies Funded</div>
-              </div>
-              <div className="card card-hover text-center bg-gradient-to-br from-accent-500 to-accent-600 text-white">
-                <div className="text-4xl mb-2">🎯</div>
-                <div className="text-3xl font-bold">8</div>
-                <div className="mt-1 opacity-90">High Relevance Matches</div>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              {fundingEvents.map((event, i) => (
-                <div key={i} className="card card-hover animate-slide-up">
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-2xl font-bold text-gray-800">{event.company}</h3>
-                        <span className={`badge ${
-                          event.relevance === 'High' ? 'badge-success' :
-                          event.relevance === 'Medium' ? 'badge-warning' : 'badge-primary'
+                      <div className="space-y-3">
+                        <div className={`p-3 rounded-lg border-l-4 ${
+                          person.emailStatus === 'verified' ? 'bg-green-50 border-green-500' : 'bg-yellow-50 border-yellow-500'
                         }`}>
-                          {event.relevance} Relevance
-                        </span>
-                        <span className="badge badge-primary">{event.industry}</span>
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="font-mono text-sm text-slate-800">{person.email}</span>
+                            <button className="text-blue-600 hover:text-blue-800">📋</button>
+                          </div>
+                          <div className="flex items-center gap-3 text-xs">
+                            <span className={`font-bold ${
+                              person.emailStatus === 'verified' ? 'text-green-700' : 'text-yellow-700'
+                            }`}>
+                              {person.emailStatus === 'verified' ? '✓ Verified' : '⚠ Catch-All'}
+                            </span>
+                            <span className="text-slate-500">•</span>
+                            <span className={`font-bold ${
+                              person.emailDeliverability >= 90 ? 'text-green-600' : 'text-yellow-600'
+                            }`}>
+                              {person.emailDeliverability}% Deliverability
+                            </span>
+                          </div>
+                        </div>
+                        <div className={`p-3 rounded-lg border-l-4 ${
+                          person.phoneVerified ? 'bg-green-50 border-green-500' : 'bg-gray-50 border-gray-400'
+                        }`}>
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="font-mono text-sm text-slate-800">{person.phone}</span>
+                            <button className="text-blue-600 hover:text-blue-800">📋</button>
+                          </div>
+                          <div className="text-xs">
+                            <span className={`font-bold ${
+                              person.phoneVerified ? 'text-green-700' : 'text-gray-600'
+                            }`}>
+                              {person.phoneVerified ? '✓ Verified' : '✗ Not Verified'}
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                      <div className="text-gray-600">
-                        <span className="font-semibold">{event.eventType}</span> • {event.date}
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-3xl font-bold text-success-600">{event.amount}</div>
-                      <div className="text-sm text-gray-500">Valuation: {event.valuation}</div>
                     </div>
                   </div>
-
-                  <div className="bg-gradient-to-r from-primary-50 to-accent-50 p-4 rounded-lg">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="text-sm text-gray-600 mb-1">Lead Investor</div>
-                        <div className="font-bold text-gray-800 text-lg">{event.lead}</div>
-                      </div>
-                      <div className="flex gap-2">
-                        <button className="btn-primary">View Details</button>
-                        <button className="btn-secondary">Track Company</button>
-                      </div>
-                    </div>
-                  </div>
-
-                  {event.relevance === 'High' && (
-                    <div className="mt-3 bg-success-50 border-l-4 border-success-500 p-3 rounded">
-                      <div className="text-sm text-success-800">
-                        <span className="font-bold">💡 Opportunity:</span> This company matches your client's ICP.
-                        Expected hiring surge in engineering roles within 30-60 days.
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
-        )}
 
-        {/* ICP Lookalikes Tab */}
-        {activeTab === 'icp' && (
-          <div className="space-y-6 animate-fade-in">
-            <div className="card bg-gradient-to-r from-primary-500 to-accent-500 text-white">
-              <h3 className="text-xl font-bold mb-2">🎭 AI-Powered ICP Lookalike Finder</h3>
-              <p className="opacity-90">
-                Our system identifies companies similar to your ideal customer profile based on industry, size, funding stage,
-                tech stack, and market positioning.
-              </p>
+          {/* Block 4: Website Job Monitoring */}
+          <div className="bg-white rounded-xl shadow-xl border-2 border-orange-200 overflow-hidden transform transition-all hover:shadow-2xl">
+            <div className="bg-gradient-to-r from-orange-600 to-orange-700 px-6 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="text-4xl">👁️</span>
+                <div>
+                  <h3 className="text-2xl font-bold text-white">Career Page Monitoring</h3>
+                  <p className="text-orange-100 text-sm">24/7 tracking of company career pages for new postings</p>
+                </div>
+              </div>
+              <span className="px-4 py-2 bg-orange-500 text-white rounded-lg font-bold">{websiteMonitoring.length} Sites</span>
             </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {icpLookalikes.map((company, i) => (
-                <div key={i} className="card card-hover animate-slide-up">
-                  <div className="text-center mb-4">
-                    <div className="w-20 h-20 mx-auto bg-gradient-to-br from-primary-400 to-accent-400 rounded-full flex items-center justify-center text-white text-3xl font-bold mb-3">
-                      {company.similarity}
-                    </div>
-                    <h3 className="text-2xl font-bold text-gray-800 mb-1">{company.company}</h3>
-                    <div className="text-sm text-gray-500">{company.location}</div>
-                  </div>
-
-                  <div className="space-y-3 mb-4">
-                    <div>
-                      <div className="text-sm text-gray-600 mb-1">Match Score</div>
-                      <div className="w-full bg-gray-200 rounded-full h-3">
-                        <div
-                          className="h-full bg-gradient-to-r from-success-500 to-primary-500 rounded-full"
-                          style={{ width: `${company.similarity}%` }}
-                        ></div>
-                      </div>
-                    </div>
-
-                    <div className="flex justify-between text-sm">
+            <div className="p-6">
+              <div className="mb-4 bg-orange-50 border-l-4 border-orange-500 p-4 rounded">
+                <p className="text-sm text-slate-700">
+                  <strong>What this shows:</strong> Automated monitoring of career pages you care about.
+                  Get instant alerts when new jobs are posted or existing jobs are removed.
+                </p>
+              </div>
+              <div className="space-y-4">
+                {websiteMonitoring.map(site => (
+                  <div key={site.id} className="border border-slate-200 rounded-lg p-5 hover:border-orange-400 transition-colors bg-slate-50">
+                    <div className="flex items-start justify-between mb-4">
                       <div>
-                        <div className="text-gray-600">Employees</div>
-                        <div className="font-bold text-gray-800">{company.employees.toLocaleString()}</div>
+                        <h4 className="font-bold text-xl text-slate-800 mb-1">{site.company}</h4>
+                        <a href={site.careerPageUrl} target="_blank" rel="noopener noreferrer"
+                           className="text-sm text-blue-600 hover:underline flex items-center gap-1">
+                          🔗 {site.careerPageUrl}
+                        </a>
+                        <div className="text-xs text-slate-500 mt-2">Last checked: {site.lastChecked}</div>
                       </div>
                       <div className="text-right">
-                        <div className="text-gray-600">Stage</div>
-                        <div className="font-bold text-gray-800">{company.fundingStage}</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mb-4">
-                    <div className="text-sm font-semibold text-gray-700 mb-2">Why They Match:</div>
-                    <div className="space-y-1">
-                      {company.matchReasons.map((reason, j) => (
-                        <div key={j} className="text-xs bg-primary-50 text-primary-700 px-2 py-1 rounded">
-                          • {reason}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="mb-4">
-                    <div className="text-sm font-semibold text-gray-700 mb-2">Tech Stack:</div>
-                    <div className="flex flex-wrap gap-2">
-                      {company.techStack.map((tech, j) => (
-                        <span key={j} className="px-2 py-1 bg-accent-100 text-accent-700 rounded text-xs font-medium">
-                          {tech}
+                        <span className={`px-4 py-2 rounded-lg font-bold ${
+                          site.status === 'New Jobs Detected' ? 'bg-green-100 text-green-700' :
+                          site.status === 'Jobs Removed' ? 'bg-red-100 text-red-700' :
+                          'bg-gray-100 text-gray-700'
+                        }`}>
+                          {site.status}
                         </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="flex gap-2">
-                    <button className="btn-primary flex-1 text-sm">View Profile</button>
-                    <button className="btn-secondary text-sm">Track</button>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="card bg-gray-50 border-2 border-dashed border-gray-300">
-              <div className="text-center py-8">
-                <div className="text-4xl mb-3">🔍</div>
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">Find More Lookalikes</h3>
-                <p className="text-gray-600 mb-4">Enter a company to find similar organizations</p>
-                <div className="flex gap-3 max-w-2xl mx-auto">
-                  <input
-                    type="text"
-                    placeholder="Company name (e.g., Goldman Sachs)..."
-                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  />
-                  <button className="btn-primary">Find Lookalikes</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Training Ground Tab (Admin Only) */}
-        {activeTab === 'training' && (
-          <div className="space-y-6 animate-fade-in">
-            <div className="card bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-              <h3 className="text-xl font-bold mb-2">🎓 AI Training Ground (Admin Only)</h3>
-              <p className="opacity-90">
-                This agent continuously trains on real employer job postings to learn matching patterns.
-                Training data is NOT visible in production.
-              </p>
-            </div>
-
-            {/* Training Controls */}
-            <div className="card">
-              <h3 className="text-2xl font-bold text-gray-800 mb-4">Training Controls</h3>
-
-              {/* Phase 1: Company Identification */}
-              <div className="mb-6 p-4 bg-blue-50 rounded-lg border-2 border-blue-300">
-                <h4 className="font-bold text-blue-900 mb-2">📋 Phase 1: Identify Qualified Companies (Run Once)</h4>
-                <p className="text-sm text-blue-800 mb-3">
-                  First, identify 20 companies with 500-1000 employees. This takes ~2 minutes. Run multiple times to build up to 100.
-                </p>
-                <button
-                  onClick={async () => {
-                    if (!confirm('This will identify 20 companies with 500-1000 employees. Takes ~2 minutes. Continue?')) return
-                    alert('⏳ Identifying companies... This will take ~2 minutes.')
-                    const { data, error } = await supabase.functions.invoke('company-identifier', {
-                      body: { action: 'identify_companies' }
-                    })
-                    if (error) {
-                      alert('❌ Company identification failed: ' + error.message)
-                      console.error('Error:', error)
-                    } else {
-                      let message = ''
-                      if (data.failed > 0 && data.successfullyInserted === 0) {
-                        message = `ℹ️ All ${data.companiesIdentified} companies already exist in database. Phase 1 complete! You can proceed to Phase 2.`
-                      } else if (data.failed > 0) {
-                        message = `⚠️ Added ${data.successfullyInserted} new companies. ${data.failed} already existed.`
-                      } else {
-                        message = `✅ Success! Added ${data.successfullyInserted} companies to database.`
-                      }
-                      alert(message + '\n\nNow you can start training with Phase 2.')
-                      console.log('Companies identified:', data)
-                      fetchTrainingStats() // Refresh stats
-                    }
-                  }}
-                  className="btn-primary"
-                >
-                  🏢 Identify Companies (One-Time Setup)
-                </button>
-              </div>
-
-              {/* Phase 2: Training */}
-              <div className="p-4 bg-purple-50 rounded-lg border-2 border-purple-300">
-                <h4 className="font-bold text-purple-900 mb-2">🎓 Phase 2: Start Training (After Company Identification)</h4>
-                <p className="text-sm text-purple-800 mb-3">
-                  Scrape 10 jobs from pre-qualified companies. Runs every 2 hours automatically (via cron).
-                </p>
-                <div className="flex gap-4">
-                  <button
-                    onClick={async () => {
-                      alert('⏳ Starting training batch... This will take ~2 minutes.')
-                      const { data, error } = await supabase.functions.invoke('training-scheduler')
-                      if (error) {
-                        alert('❌ Training start failed: ' + error.message + '\nMake sure you ran Phase 1 first!')
-                        console.error('Error:', error)
-                      } else {
-                        alert('✅ Training batch complete! Scraped ' + (data?.scraped || 0) + ' jobs. Total: ' + (data?.totalJobs || 0))
-                        console.log('Training result:', data)
-                        fetchJobs() // Refresh job list
-                        fetchTrainingStats() // Refresh stats
-                      }
-                    }}
-                    className="btn-primary"
-                  >
-                    🚀 Start Training Batch (10 jobs)
-                  </button>
-                  <button
-                    onClick={() => {
-                      fetchJobs()
-                      fetchTrainingStats()
-                    }}
-                    className="btn-secondary"
-                  >
-                    🔄 Refresh Progress
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Training Progress */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="card card-hover bg-gradient-to-br from-purple-500 to-purple-600 text-white">
-                <div className="text-sm font-medium opacity-90">Jobs Scraped</div>
-                <div className="text-4xl font-bold mt-2">{trainingStats.jobsScraped.toLocaleString()}</div>
-                <div className="text-sm mt-2 opacity-80">Target: 1,000</div>
-              </div>
-
-              <div className="card card-hover bg-gradient-to-br from-pink-500 to-pink-600 text-white">
-                <div className="text-sm font-medium opacity-90">Companies Discovered</div>
-                <div className="text-4xl font-bold mt-2">{trainingStats.companiesDiscovered.toLocaleString()}</div>
-                <div className="text-sm mt-2 opacity-80">Learning patterns...</div>
-              </div>
-
-              <div className="card card-hover bg-gradient-to-br from-indigo-500 to-indigo-600 text-white">
-                <div className="text-sm font-medium opacity-90">Unique Phrases</div>
-                <div className="text-4xl font-bold mt-2">{trainingStats.uniquePhrases.toLocaleString()}</div>
-                <div className="text-sm mt-2 opacity-80">Signature patterns</div>
-              </div>
-
-              <div className="card card-hover bg-gradient-to-br from-blue-500 to-blue-600 text-white">
-                <div className="text-sm font-medium opacity-90">Locations Analyzed</div>
-                <div className="text-4xl font-bold mt-2">{trainingStats.locationsAnalyzed.toLocaleString()}</div>
-                <div className="text-sm mt-2 opacity-80">Hub intelligence</div>
-              </div>
-            </div>
-
-            {/* Training Status */}
-            <div className="card">
-              <h3 className="text-xl font-bold text-gray-800 mb-4">Current Training Status</h3>
-              <div className="bg-gray-100 p-4 rounded-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-semibold">Status:</span>
-                  <span className={`badge ${trainingStats.jobsScraped > 0 ? 'badge-success' : 'badge-warning'}`}>
-                    {trainingStats.jobsScraped > 0 ? 'Training Active' : 'Ready to Train'}
-                  </span>
-                </div>
-                <div className="w-full bg-gray-300 rounded-full h-4 mb-2">
-                  <div
-                    className="bg-gradient-to-r from-purple-500 to-pink-500 h-4 rounded-full transition-all duration-500"
-                    style={{ width: `${Math.min((trainingStats.jobsScraped / 1000) * 100, 100)}%` }}
-                  ></div>
-                </div>
-                <p className="text-sm text-gray-600">
-                  {trainingStats.jobsScraped === 0
-                    ? 'No training data yet. Run Phase 1 first, then start Phase 2 to begin scraping jobs.'
-                    : `Progress: ${trainingStats.jobsScraped} / 1,000 jobs scraped (${((trainingStats.jobsScraped / 1000) * 100).toFixed(1)}%)`
-                  }
-                </p>
-              </div>
-            </div>
-
-            {/* Sample Training Data */}
-            <div className="card">
-              <h3 className="text-xl font-bold text-gray-800 mb-4">Sample Training Data</h3>
-              <p className="text-gray-600 mb-4">Recent job postings the agent has learned from:</p>
-              <div className="bg-gray-50 p-4 rounded-lg text-sm">
-                {liveJobs.length === 0 ? (
-                  <p className="text-gray-500 font-mono">No training data yet. Start a training batch to see results here.</p>
-                ) : (
-                  <div className="space-y-3">
-                    {liveJobs.slice(0, 5).map((job) => (
-                      <div key={job.id} className="bg-white p-3 rounded border-l-4 border-purple-500">
-                        <div className="flex justify-between items-start mb-2">
-                          <div className="font-semibold text-gray-800">{job.job_title}</div>
-                          <span className="text-xs badge badge-primary">{job.vertical}</span>
+                        <div className="text-sm text-slate-600 mt-2">
+                          {site.jobCount} total jobs ({site.jobCount > site.previousJobCount ? '+' : ''}{site.jobCount - site.previousJobCount})
                         </div>
-                        <div className="text-xs text-gray-600">
-                          <div><strong>{job.company_name}</strong> • {job.location}</div>
-                          <div className="mt-1">Employees: {job.employee_count}</div>
-                          <div className="mt-1 text-gray-500">Scraped: {new Date(job.last_verified).toLocaleDateString()}</div>
-                        </div>
-                        <a
-                          href={job.job_link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs text-primary-600 hover:underline mt-2 inline-flex items-center gap-1"
-                        >
-                          <span>🔗</span>
-                          <span>View Original Posting</span>
-                        </a>
                       </div>
-                    ))}
-                    {liveJobs.length > 5 && (
-                      <p className="text-xs text-gray-500 text-center pt-2">
-                        Showing 5 of {liveJobs.length} total jobs
-                      </p>
+                    </div>
+                    {site.changes.length > 0 && (
+                      <div className="space-y-2">
+                        <h5 className="font-semibold text-slate-700 text-sm">Recent Changes:</h5>
+                        {site.changes.map((change, i) => (
+                          <div key={i} className={`p-3 rounded-lg border-l-4 ${
+                            change.type === 'New Job Posted' ? 'bg-green-50 border-green-500' : 'bg-red-50 border-red-500'
+                          }`}>
+                            <div className="flex items-center gap-2 text-sm">
+                              <span className="text-lg">{change.type === 'New Job Posted' ? '✅' : '❌'}</span>
+                              <span className="font-semibold">{change.type}:</span>
+                              <span className="text-slate-800">{change.title}</span>
+                            </div>
+                            <div className="text-xs text-slate-600 ml-7">
+                              {change.department} • {change.timestamp}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     )}
                   </div>
-                )}
-              </div>
-            </div>
-
-            {/* Learned Intelligence */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="card">
-                <h3 className="text-xl font-bold text-gray-800 mb-4">Industry Distribution</h3>
-                <p className="text-sm text-gray-600 mb-4">Jobs scraped by vertical:</p>
-                <div className="space-y-2">
-                  {liveJobs.length > 0 ? (
-                    <>
-                      {Object.entries(
-                        liveJobs.reduce((acc, job) => {
-                          acc[job.vertical] = (acc[job.vertical] || 0) + 1
-                          return acc
-                        }, {} as Record<string, number>)
-                      )
-                        .sort(([, a], [, b]) => b - a)
-                        .map(([vertical, count]) => (
-                          <div key={vertical} className="bg-purple-50 p-3 rounded border-l-4 border-purple-500">
-                            <div className="flex justify-between items-center">
-                              <div className="font-semibold text-gray-800">{vertical}</div>
-                              <div className="text-sm font-bold text-purple-700">{count} jobs</div>
-                            </div>
-                            <div className="w-full bg-purple-200 rounded-full h-2 mt-2">
-                              <div
-                                className="bg-purple-600 h-2 rounded-full"
-                                style={{ width: `${(count / liveJobs.length) * 100}%` }}
-                              ></div>
-                            </div>
-                          </div>
-                        ))}
-                    </>
-                  ) : (
-                    <div className="text-sm text-gray-500 italic">
-                      No data yet. Start training to see industry distribution.
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="card">
-                <h3 className="text-xl font-bold text-gray-800 mb-4">Location Intelligence</h3>
-                <p className="text-sm text-gray-600 mb-4">Geographic patterns from training:</p>
-                <div className="space-y-2">
-                  {liveJobs.length > 0 ? (
-                    <>
-                      {Object.entries(
-                        liveJobs.reduce((acc, job) => {
-                          const loc = job.location || 'Unknown'
-                          acc[loc] = (acc[loc] || 0) + 1
-                          return acc
-                        }, {} as Record<string, number>)
-                      )
-                        .sort(([, a], [, b]) => b - a)
-                        .slice(0, 5)
-                        .map(([location, count]) => (
-                          <div key={location} className="bg-green-50 p-3 rounded border-l-4 border-green-500">
-                            <div className="flex justify-between items-center">
-                              <div className="font-semibold text-gray-800">{location}</div>
-                              <div className="text-sm font-bold text-green-700">{count} jobs</div>
-                            </div>
-                            <div className="text-xs text-gray-600 mt-1">
-                              {Math.round((count / liveJobs.length) * 100)}% of total jobs
-                            </div>
-                          </div>
-                        ))}
-                    </>
-                  ) : (
-                    <div className="text-sm text-gray-500 italic">
-                      No data yet. Start training to see location patterns.
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Admin Notice */}
-            <div className="card bg-red-50 border-2 border-red-300">
-              <div className="flex items-start gap-3">
-                <span className="text-2xl">⚠️</span>
-                <div>
-                  <h4 className="font-bold text-red-900 mb-1">Admin Only - Not Visible in Production</h4>
-                  <p className="text-sm text-red-800">
-                    This Training Ground tab is only visible to you (localhost). When deployed, this tab will be hidden.
-                    The background training agent will continue to run and improve the reverse engineering accuracy,
-                    but users won't see this data.
-                  </p>
-                </div>
+                ))}
               </div>
             </div>
           </div>
-        )}
+
+          {/* Block 5: Reverse Engineered Jobs */}
+          <div className="bg-white rounded-xl shadow-xl border-2 border-pink-200 overflow-hidden transform transition-all hover:shadow-2xl">
+            <div className="bg-gradient-to-r from-pink-600 to-pink-700 px-6 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="text-4xl">🔍</span>
+                <div>
+                  <h3 className="text-2xl font-bold text-white">Reverse Engineered Competitor Jobs</h3>
+                  <p className="text-pink-100 text-sm">AI analysis identifying real clients behind staffing agency posts</p>
+                </div>
+              </div>
+              <span className="px-4 py-2 bg-pink-500 text-white rounded-lg font-bold">{reverseEngineeredJobs.length} Matches</span>
+            </div>
+            <div className="p-6">
+              <div className="mb-4 bg-pink-50 border-l-4 border-pink-500 p-4 rounded">
+                <p className="text-sm text-slate-700">
+                  <strong>What this shows:</strong> When competitors post vague "client confidential" jobs, our AI reverse engineers them
+                  to identify the real company. This gives you insights into who your competitors are working with.
+                </p>
+              </div>
+              <div className="space-y-4">
+                {reverseEngineeredJobs.map(job => (
+                  <div key={job.id} className="border border-slate-200 rounded-lg p-5 hover:border-pink-400 transition-colors bg-slate-50">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      <div>
+                        <div className="mb-3">
+                          <div className="text-xs text-slate-500 mb-1">COMPETITOR POSTED:</div>
+                          <div className="font-bold text-lg text-slate-800">{job.postedJobTitle}</div>
+                          <div className="text-sm text-slate-600 mt-1">by {job.competitorAgency}</div>
+                          <div className="text-xs text-slate-500 mt-1">📍 {job.location}</div>
+                        </div>
+                        <a href={job.competitorUrl} target="_blank" rel="noopener noreferrer"
+                           className="text-sm text-blue-600 hover:underline flex items-center gap-1">
+                          🔗 View Competitor Posting
+                        </a>
+                      </div>
+                      <div>
+                        <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-500 rounded-lg p-4">
+                          <div className="text-xs text-slate-600 mb-1">AI IDENTIFIED CLIENT:</div>
+                          <div className="font-bold text-2xl text-green-700 mb-2">{job.identifiedClient}</div>
+                          <div className="flex items-center gap-2 mb-3">
+                            <div className="text-3xl font-bold text-green-600">{job.confidence}%</div>
+                            <div className="text-xs text-slate-600">Confidence</div>
+                          </div>
+                          <div className="text-xs">
+                            <span className={`px-2 py-1 rounded font-bold ${
+                              job.status === 'Verified Match' ? 'bg-green-200 text-green-800' : 'bg-yellow-200 text-yellow-800'
+                            }`}>
+                              {job.status}
+                            </span>
+                          </div>
+                          <a href={job.originalJobUrl} target="_blank" rel="noopener noreferrer"
+                             className="mt-3 block text-sm text-blue-600 hover:underline flex items-center gap-1">
+                            🔗 View Original Job
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-4 pt-4 border-t border-slate-200">
+                      <div className="text-sm font-semibold text-slate-700 mb-2">Match Indicators:</div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        {job.matchIndicators.map((indicator, i) => (
+                          <div key={i} className="flex items-start gap-2 text-xs text-slate-600 bg-white p-2 rounded border border-slate-200">
+                            <span className="text-green-500">✓</span>
+                            <span>{indicator}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Block 6: Job Changes & Executive Movements */}
+          <div className="bg-white rounded-xl shadow-xl border-2 border-indigo-200 overflow-hidden transform transition-all hover:shadow-2xl">
+            <div className="bg-gradient-to-r from-indigo-600 to-indigo-700 px-6 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="text-4xl">🔄</span>
+                <div>
+                  <h3 className="text-2xl font-bold text-white">Job Changes & Executive Movements</h3>
+                  <p className="text-indigo-100 text-sm">Track when key people change roles (strong hiring signals)</p>
+                </div>
+              </div>
+              <span className="px-4 py-2 bg-indigo-500 text-white rounded-lg font-bold">{jobChanges.length} Changes</span>
+            </div>
+            <div className="p-6">
+              <div className="mb-4 bg-indigo-50 border-l-4 border-indigo-500 p-4 rounded">
+                <p className="text-sm text-slate-700">
+                  <strong>What this shows:</strong> When executives, engineering managers, or recruiters change companies,
+                  they typically hire for their new teams within 30-90 days. These are high-value early signals.
+                </p>
+              </div>
+              <div className="space-y-4">
+                {jobChanges.map(change => (
+                  <div key={change.id} className="border border-slate-200 rounded-lg p-5 hover:border-indigo-400 transition-colors bg-slate-50">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-start gap-4">
+                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-white font-bold text-xl">
+                          {change.person.split(' ').map(n => n[0]).join('')}
+                        </div>
+                        <div>
+                          <a href={change.linkedIn} target="_blank" rel="noopener noreferrer"
+                             className="font-bold text-xl text-slate-800 hover:text-indigo-600 flex items-center gap-2">
+                            {change.person} 🔗
+                          </a>
+                          <div className="text-sm text-slate-600 mt-2 space-y-1">
+                            <div>
+                              <span className="text-slate-500">From:</span>{' '}
+                              <span className="font-semibold">{change.previousTitle}</span> at {change.previousCompany}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-green-600 font-bold">→</span>
+                              <span className="text-slate-500">To:</span>{' '}
+                              <span className="font-semibold text-green-700">{change.newTitle}</span> at{' '}
+                              <span className="font-semibold text-green-700">{change.newCompany}</span>
+                            </div>
+                          </div>
+                          <div className="text-xs text-slate-500 mt-2">Changed on {change.changeDate}</div>
+                        </div>
+                      </div>
+                      <span className={`px-3 py-1 rounded-lg font-bold text-sm ${
+                        change.relevance === 'Very High' ? 'bg-red-100 text-red-700' :
+                        change.relevance === 'High' ? 'bg-orange-100 text-orange-700' :
+                        'bg-yellow-100 text-yellow-700'
+                      }`}>
+                        {change.relevance} Priority
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div className="bg-blue-50 border-l-4 border-blue-500 p-3 rounded">
+                        <div className="text-xs text-slate-600 font-semibold mb-1">HIRING SIGNAL:</div>
+                        <div className="text-sm text-slate-800">{change.signal}</div>
+                      </div>
+                      <div className="bg-purple-50 border-l-4 border-purple-500 p-3 rounded">
+                        <div className="text-xs text-slate-600 font-semibold mb-1">EXPECTED TEAM SIZE:</div>
+                        <div className="text-sm text-slate-800">{change.teamSize}</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Block 7: Funding Events */}
+          <div className="bg-white rounded-xl shadow-xl border-2 border-emerald-200 overflow-hidden transform transition-all hover:shadow-2xl">
+            <div className="bg-gradient-to-r from-emerald-600 to-emerald-700 px-6 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="text-4xl">💰</span>
+                <div>
+                  <h3 className="text-2xl font-bold text-white">Funding Events & Investment News</h3>
+                  <p className="text-emerald-100 text-sm">Recent funding rounds with hiring impact analysis</p>
+                </div>
+              </div>
+              <span className="px-4 py-2 bg-emerald-500 text-white rounded-lg font-bold">{fundingEvents.length} Events</span>
+            </div>
+            <div className="p-6">
+              <div className="mb-4 bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded">
+                <p className="text-sm text-slate-700">
+                  <strong>What this shows:</strong> Companies that just raised funding typically go on hiring sprees.
+                  We track funding announcements and analyze post-funding hiring signals to predict hiring volume.
+                </p>
+              </div>
+              <div className="space-y-4">
+                {fundingEvents.map(event => (
+                  <div key={event.id} className="border border-slate-200 rounded-lg p-5 hover:border-emerald-400 transition-colors bg-slate-50">
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <h4 className="font-bold text-2xl text-slate-800 mb-1">{event.company}</h4>
+                        <div className="flex items-center gap-3 text-sm text-slate-600">
+                          <span className="font-semibold">{event.eventType}</span>
+                          <span>•</span>
+                          <span>{event.date}</span>
+                          <span>•</span>
+                          <span className="px-2 py-1 bg-emerald-100 text-emerald-700 rounded text-xs font-medium">
+                            {event.industry}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-3xl font-bold text-emerald-600">{event.amount}</div>
+                        <div className="text-sm text-slate-500">Valuation: {event.valuation}</div>
+                        <div className="text-xs text-slate-500 mt-1">Led by {event.lead}</div>
+                      </div>
+                    </div>
+                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 p-4 rounded-lg mb-3">
+                      <div className="text-xs font-bold text-slate-600 mb-2">POST-FUNDING HIRING SIGNALS:</div>
+                      <div className="space-y-1">
+                        {event.postFundingSignals.map((signal, i) => (
+                          <div key={i} className="flex items-start gap-2 text-sm text-slate-700">
+                            <span className="text-blue-500">✓</span>
+                            <span>{signal}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between pt-3 border-t border-slate-200">
+                      <div className="flex items-center gap-2">
+                        <span className={`px-3 py-1 rounded-lg font-bold text-sm ${
+                          event.hiringImpact === 'Very High' ? 'bg-red-100 text-red-700' : 'bg-orange-100 text-orange-700'
+                        }`}>
+                          {event.hiringImpact} Impact
+                        </span>
+                        <span className="text-sm text-slate-600">
+                          <strong>Estimated:</strong> {event.estimatedHires}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Block 8: Company Events */}
+          <div className="bg-white rounded-xl shadow-xl border-2 border-cyan-200 overflow-hidden transform transition-all hover:shadow-2xl">
+            <div className="bg-gradient-to-r from-cyan-600 to-cyan-700 px-6 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="text-4xl">📰</span>
+                <div>
+                  <h3 className="text-2xl font-bold text-white">Company Events & Announcements</h3>
+                  <p className="text-cyan-100 text-sm">Product launches, office openings, partnerships & more</p>
+                </div>
+              </div>
+              <span className="px-4 py-2 bg-cyan-500 text-white rounded-lg font-bold">{companyEvents.length} Events</span>
+            </div>
+            <div className="p-6">
+              <div className="mb-4 bg-cyan-50 border-l-4 border-cyan-500 p-4 rounded">
+                <p className="text-sm text-slate-700">
+                  <strong>What this shows:</strong> Major company milestones like product launches, office openings, or partnerships
+                  often trigger hiring surges. These events help predict when companies will need more talent.
+                </p>
+              </div>
+              <div className="space-y-4">
+                {companyEvents.map(event => (
+                  <div key={event.id} className="border border-slate-200 rounded-lg p-5 hover:border-cyan-400 transition-colors bg-slate-50">
+                    <div className="flex items-start justify-between mb-3">
+                      <div>
+                        <div className="flex items-center gap-3 mb-2">
+                          <h4 className="font-bold text-xl text-slate-800">{event.company}</h4>
+                          <span className="px-3 py-1 bg-cyan-100 text-cyan-700 rounded-lg text-xs font-bold">
+                            {event.eventType}
+                          </span>
+                        </div>
+                        <div className="font-semibold text-lg text-slate-700 mb-1">{event.eventTitle}</div>
+                        <div className="text-sm text-slate-500">{event.date} • Source: {event.source}</div>
+                      </div>
+                      <span className={`px-3 py-1 rounded-lg font-bold text-sm ${
+                        event.impact === 'Very High' ? 'bg-red-100 text-red-700' : 'bg-orange-100 text-orange-700'
+                      }`}>
+                        {event.impact} Impact
+                      </span>
+                    </div>
+                    <div className="bg-slate-100 border-l-4 border-slate-400 p-3 rounded mb-3">
+                      <p className="text-sm text-slate-700">{event.description}</p>
+                    </div>
+                    <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 p-4 rounded-lg">
+                      <div className="text-xs font-bold text-slate-600 mb-2">HIRING SIGNALS DETECTED:</div>
+                      <div className="space-y-1 mb-3">
+                        {event.hiringSignals.map((signal, i) => (
+                          <div key={i} className="flex items-start gap-2 text-sm text-slate-700">
+                            <span className="text-green-500">✓</span>
+                            <span>{signal}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="text-sm font-bold text-green-700">
+                        Estimated Hiring Need: {event.estimatedHires}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Summary Footer */}
+        <div className="mt-12 bg-gradient-to-r from-slate-800 via-blue-900 to-indigo-900 rounded-xl shadow-2xl p-8 text-white">
+          <h3 className="text-2xl font-bold mb-4">📊 Dashboard Summary</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="text-center">
+              <div className="text-4xl font-bold text-blue-300">{linkedinPosts.length}</div>
+              <div className="text-sm text-slate-300 mt-1">LinkedIn Signals</div>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl font-bold text-green-300">{freshOpenJobs.length}</div>
+              <div className="text-sm text-slate-300 mt-1">Fresh Jobs</div>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl font-bold text-purple-300">{stakeholders.length}</div>
+              <div className="text-sm text-slate-300 mt-1">Verified Contacts</div>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl font-bold text-orange-300">{websiteMonitoring.length}</div>
+              <div className="text-sm text-slate-300 mt-1">Sites Monitored</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )
