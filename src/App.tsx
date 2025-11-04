@@ -405,7 +405,7 @@ const COLORS = ['#0ea5e9', '#d946ef', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6'
 // ==================== MAIN COMPONENT ====================
 
 function App() {
-  const [activeTab, setActiveTab] = useState('all-data')
+  const [activeTab, setActiveTab] = useState('linkedin')
   const [loading, setLoading] = useState(false)
   const [lastUpdated] = useState<Date>(new Date())
 
@@ -442,7 +442,7 @@ function App() {
             <p className="text-slate-600 text-lg leading-relaxed">
               This dashboard delivers <strong>8 critical data streams</strong> for recruitment intelligence.
               Each block below represents a different data source that we monitor and analyze in real-time.
-              Click on any card to explore detailed insights, verified contacts, and actionable hiring signals.
+              Use the tabs below to explore each data source.
             </p>
             <div className="mt-4 flex flex-wrap gap-3">
               <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">8 Data Sources</span>
@@ -453,10 +453,37 @@ function App() {
           </div>
         </div>
 
+        {/* Tab Navigation */}
+        <div className="mb-8 bg-white rounded-xl shadow-lg p-2 flex flex-wrap gap-2">
+          {[
+            { id: 'linkedin', label: '💼 LinkedIn Posts', color: 'blue' },
+            { id: 'jobs', label: '🆕 Fresh Jobs', color: 'green' },
+            { id: 'stakeholders', label: '👥 Stakeholders', color: 'purple' },
+            { id: 'monitoring', label: '👁️ Monitoring', color: 'orange' },
+            { id: 'reverse', label: '🔍 Reverse Eng.', color: 'pink' },
+            { id: 'movements', label: '🔄 Job Changes', color: 'indigo' },
+            { id: 'funding', label: '💰 Funding', color: 'emerald' },
+            { id: 'events', label: '📰 Events', color: 'cyan' }
+          ].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex-1 min-w-[140px] px-4 py-3 rounded-lg font-semibold transition-all ${
+                activeTab === tab.id
+                  ? `bg-${tab.color}-600 text-white shadow-lg scale-105`
+                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
         {/* Data Blocks Grid */}
         <div className="space-y-8">
 
           {/* Block 1: LinkedIn Posts */}
+          {activeTab === 'linkedin' && (
           <div className="bg-white rounded-xl shadow-xl border-2 border-blue-200 overflow-hidden transform transition-all hover:shadow-2xl">
             <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -519,8 +546,10 @@ function App() {
               </div>
             </div>
           </div>
+          )}
 
           {/* Block 2: Fresh Open Jobs */}
+          {activeTab === 'jobs' && (
           <div className="bg-white rounded-xl shadow-xl border-2 border-green-200 overflow-hidden transform transition-all hover:shadow-2xl">
             <div className="bg-gradient-to-r from-green-600 to-green-700 px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -580,8 +609,10 @@ function App() {
               </div>
             </div>
           </div>
+          )}
 
           {/* Block 3: Stakeholders & Hiring Managers */}
+          {activeTab === 'stakeholders' && (
           <div className="bg-white rounded-xl shadow-xl border-2 border-purple-200 overflow-hidden transform transition-all hover:shadow-2xl">
             <div className="bg-gradient-to-r from-purple-600 to-purple-700 px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -678,8 +709,10 @@ function App() {
               </div>
             </div>
           </div>
+          )}
 
           {/* Block 4: Website Job Monitoring */}
+          {activeTab === 'monitoring' && (
           <div className="bg-white rounded-xl shadow-xl border-2 border-orange-200 overflow-hidden transform transition-all hover:shadow-2xl">
             <div className="bg-gradient-to-r from-orange-600 to-orange-700 px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -747,8 +780,10 @@ function App() {
               </div>
             </div>
           </div>
+          )}
 
           {/* Block 5: Reverse Engineered Jobs */}
+          {activeTab === 'reverse' && (
           <div className="bg-white rounded-xl shadow-xl border-2 border-pink-200 overflow-hidden transform transition-all hover:shadow-2xl">
             <div className="bg-gradient-to-r from-pink-600 to-pink-700 px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -821,8 +856,10 @@ function App() {
               </div>
             </div>
           </div>
+          )}
 
           {/* Block 6: Job Changes & Executive Movements */}
+          {activeTab === 'movements' && (
           <div className="bg-white rounded-xl shadow-xl border-2 border-indigo-200 overflow-hidden transform transition-all hover:shadow-2xl">
             <div className="bg-gradient-to-r from-indigo-600 to-indigo-700 px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -892,8 +929,10 @@ function App() {
               </div>
             </div>
           </div>
+          )}
 
           {/* Block 7: Funding Events */}
+          {activeTab === 'funding' && (
           <div className="bg-white rounded-xl shadow-xl border-2 border-emerald-200 overflow-hidden transform transition-all hover:shadow-2xl">
             <div className="bg-gradient-to-r from-emerald-600 to-emerald-700 px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -962,8 +1001,10 @@ function App() {
               </div>
             </div>
           </div>
+          )}
 
           {/* Block 8: Company Events */}
+          {activeTab === 'events' && (
           <div className="bg-white rounded-xl shadow-xl border-2 border-cyan-200 overflow-hidden transform transition-all hover:shadow-2xl">
             <div className="bg-gradient-to-r from-cyan-600 to-cyan-700 px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -1024,6 +1065,7 @@ function App() {
               </div>
             </div>
           </div>
+          )}
 
         </div>
 
