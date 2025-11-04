@@ -103,29 +103,39 @@ cd RecruitIQ
 npm install
 ```
 
-3. **Set up environment variables**
+3. **Set up Supabase**
+
+Create a new project at [supabase.com](https://supabase.com) if you haven't already.
+
+Then set up environment variables:
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env`:
+Edit `.env` with your Supabase credentials (found in Project Settings → API):
 ```env
-VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
-4. **Run database migrations**
+4. **Link to your Supabase project** (optional, for CLI usage)
+```bash
+npx supabase login
+npx supabase link --project-ref your-project-ref
+```
+
+5. **Run database migrations**
 ```bash
 npx supabase db push
 ```
 
-5. **Deploy Edge Functions**
+6. **Deploy Edge Functions**
 ```bash
 npx supabase functions deploy company-identifier
 npx supabase functions deploy training-scheduler
 ```
 
-6. **Start development server**
+7. **Start development server**
 ```bash
 npm run dev
 ```
