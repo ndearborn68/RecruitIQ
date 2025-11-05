@@ -409,6 +409,14 @@ function App() {
   const [loading, setLoading] = useState(false)
   const [lastUpdated] = useState<Date>(new Date())
 
+  // AI Assistant state
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [userEmail, setUserEmail] = useState('')
+  const [userPassword, setUserPassword] = useState('')
+  const [chatMessages, setChatMessages] = useState<Array<{role: 'user' | 'assistant', content: string}>>([])
+  const [currentQuestion, setCurrentQuestion] = useState('')
+  const [isProcessing, setIsProcessing] = useState(false)
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       {/* Top Navigation Bar */}
@@ -534,6 +542,16 @@ function App() {
             }`}
           >
             📰 Events
+          </button>
+          <button
+            onClick={() => setActiveTab('ai-assistant')}
+            className={`flex-1 min-w-[140px] px-4 py-3 rounded-lg font-semibold transition-all ${
+              activeTab === 'ai-assistant'
+                ? 'bg-violet-600 text-white shadow-lg scale-105'
+                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+            }`}
+          >
+            🤖 AI Assistant
           </button>
         </div>
 
@@ -1121,6 +1139,241 @@ function App() {
                   </div>
                 ))}
               </div>
+            </div>
+          </div>
+          )}
+
+          {/* Block 9: AI Assistant with Natural Language Questions */}
+          {activeTab === 'ai-assistant' && (
+          <div className="bg-white rounded-xl shadow-xl border-2 border-violet-200 overflow-hidden">
+            <div className="bg-gradient-to-r from-violet-600 to-purple-700 px-6 py-4">
+              <div className="flex items-center gap-3">
+                <span className="text-4xl">🤖</span>
+                <div>
+                  <h3 className="text-2xl font-bold text-white">AI Assistant - Natural Language Questions</h3>
+                  <p className="text-violet-100 text-sm">Ask questions about your recruitment data in plain English</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6">
+              {!isLoggedIn ? (
+                /* Login Interface */
+                <div className="max-w-md mx-auto">
+                  <div className="bg-gradient-to-br from-violet-50 to-purple-50 border-2 border-violet-300 rounded-xl p-8 shadow-lg">
+                    <div className="text-center mb-6">
+                      <div className="text-6xl mb-4">🔐</div>
+                      <h4 className="text-2xl font-bold text-slate-800 mb-2">Client Login Required</h4>
+                      <p className="text-slate-600">Sign in to access the AI Assistant and ask questions about your data</p>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-semibold text-slate-700 mb-2">Email Address</label>
+                        <input
+                          type="email"
+                          value={userEmail}
+                          onChange={(e) => setUserEmail(e.target.value)}
+                          placeholder="client@company.com"
+                          className="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:outline-none focus:border-violet-500 transition-colors"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-semibold text-slate-700 mb-2">Password</label>
+                        <input
+                          type="password"
+                          value={userPassword}
+                          onChange={(e) => setUserPassword(e.target.value)}
+                          placeholder="••••••••"
+                          className="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:outline-none focus:border-violet-500 transition-colors"
+                        />
+                      </div>
+
+                      <button
+                        onClick={() => {
+                          if (userEmail && userPassword) {
+                            setIsLoggedIn(true)
+                            setChatMessages([
+                              { role: 'assistant', content: 'Hello! I\'m your AI recruitment assistant. I can help you analyze data, find insights, and answer questions about your recruitment intelligence. What would you like to know?' }
+                            ])
+                          } else {
+                            alert('Please enter both email and password')
+                          }
+                        }}
+                        className="w-full bg-gradient-to-r from-violet-600 to-purple-600 text-white font-bold py-3 px-6 rounded-lg hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg"
+                      >
+                        Sign In to AI Assistant
+                      </button>
+
+                      <div className="text-center">
+                        <a href="#" className="text-sm text-violet-600 hover:underline">Forgot password?</a>
+                      </div>
+                    </div>
+
+                    <div className="mt-6 pt-6 border-t border-violet-200">
+                      <p className="text-xs text-slate-500 text-center">
+                        Demo Mode: Enter any email and password to access the AI Assistant mockup
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                /* Chat Interface */
+                <div className="max-w-4xl mx-auto">
+                  {/* User Info Bar */}
+                  <div className="bg-gradient-to-r from-violet-100 to-purple-100 border-2 border-violet-300 rounded-lg p-4 mb-6 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-gradient-to-br from-violet-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                        {userEmail.charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <div className="font-bold text-slate-800">{userEmail}</div>
+                        <div className="text-sm text-slate-600">Client Account</div>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setIsLoggedIn(false)
+                        setUserEmail('')
+                        setUserPassword('')
+                        setChatMessages([])
+                      }}
+                      className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg font-medium transition-colors"
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+
+                  {/* Explanation Box */}
+                  <div className="mb-6 bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+                    <p className="text-sm text-slate-700">
+                      <strong>What this does:</strong> Ask questions in natural language about your recruitment data.
+                      For example: "Show me all funding events from last month" or "Which companies have the most hiring managers with verified emails?"
+                    </p>
+                  </div>
+
+                  {/* Chat Messages */}
+                  <div className="bg-slate-50 border-2 border-slate-200 rounded-xl p-6 mb-6 min-h-[400px] max-h-[500px] overflow-y-auto">
+                    <div className="space-y-4">
+                      {chatMessages.map((msg, idx) => (
+                        <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                          <div className={`max-w-[80%] rounded-xl p-4 ${
+                            msg.role === 'user'
+                              ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white'
+                              : 'bg-white border-2 border-slate-300 text-slate-800'
+                          }`}>
+                            <div className="flex items-start gap-3">
+                              {msg.role === 'assistant' && (
+                                <div className="w-8 h-8 bg-gradient-to-br from-violet-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
+                                  🤖
+                                </div>
+                              )}
+                              <div className="flex-1">
+                                <div className={`text-xs font-bold mb-1 ${msg.role === 'user' ? 'text-violet-100' : 'text-violet-600'}`}>
+                                  {msg.role === 'user' ? 'You' : 'AI Assistant'}
+                                </div>
+                                <div className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+
+                      {isProcessing && (
+                        <div className="flex justify-start">
+                          <div className="bg-white border-2 border-slate-300 rounded-xl p-4">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 bg-violet-600 rounded-full animate-bounce"></div>
+                              <div className="w-2 h-2 bg-violet-600 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                              <div className="w-2 h-2 bg-violet-600 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                              <span className="ml-2 text-sm text-slate-600">AI is thinking...</span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Question Input */}
+                  <div className="bg-white border-2 border-slate-300 rounded-xl p-4 shadow-lg">
+                    <div className="flex gap-3">
+                      <input
+                        type="text"
+                        value={currentQuestion}
+                        onChange={(e) => setCurrentQuestion(e.target.value)}
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter' && currentQuestion.trim() && !isProcessing) {
+                            const userMsg = currentQuestion.trim()
+                            setChatMessages([...chatMessages, { role: 'user', content: userMsg }])
+                            setCurrentQuestion('')
+                            setIsProcessing(true)
+
+                            // Simulate AI response
+                            setTimeout(() => {
+                              const responses = [
+                                'Based on your data, I found 3 companies that received funding in the last 30 days: Ramp ($300M Series D), Anthropic ($450M Series C), and Scale AI ($250M Series E Extension). All three show high hiring signals with 50-100+ estimated hires in the next 6 months.',
+                                'I analyzed the stakeholder data and found 4 verified contacts across your target companies. 3 have verified emails with 90%+ deliverability rates, and 3 have verified phone numbers. The highest influence contact is Michael Rodriguez (CTO at Plaid).',
+                                'Looking at the LinkedIn activity, there are 3 recent hiring signals. The most relevant is Michael Rodriguez\'s post about hiring 20+ engineers after their Series D, with a 98% relevance score.',
+                                'I found 2 reverse-engineered jobs with high confidence. The top match is a "Senior Backend Developer - Fintech Client" posted by TechStaff Solutions, which I identified as Stripe with 94% confidence based on location, tech stack, and salary match.'
+                              ]
+                              const randomResponse = responses[Math.floor(Math.random() * responses.length)]
+                              setChatMessages(prev => [...prev, { role: 'assistant', content: randomResponse }])
+                              setIsProcessing(false)
+                            }, 1500)
+                          }
+                        }}
+                        placeholder="Ask a question about your recruitment data..."
+                        disabled={isProcessing}
+                        className="flex-1 px-4 py-3 border-2 border-slate-300 rounded-lg focus:outline-none focus:border-violet-500 transition-colors disabled:bg-slate-100"
+                      />
+                      <button
+                        onClick={() => {
+                          if (currentQuestion.trim() && !isProcessing) {
+                            const userMsg = currentQuestion.trim()
+                            setChatMessages([...chatMessages, { role: 'user', content: userMsg }])
+                            setCurrentQuestion('')
+                            setIsProcessing(true)
+
+                            setTimeout(() => {
+                              const responses = [
+                                'Based on your data, I found 3 companies that received funding in the last 30 days: Ramp ($300M Series D), Anthropic ($450M Series C), and Scale AI ($250M Series E Extension). All three show high hiring signals.',
+                                'I analyzed the stakeholder data and found 4 verified contacts with 90%+ email deliverability rates across your target companies.',
+                                'Looking at the LinkedIn activity, there are 3 recent hiring signals with relevance scores above 90%. The top signal is from Michael Rodriguez (CTO at Plaid) with 98% relevance.',
+                              ]
+                              const randomResponse = responses[Math.floor(Math.random() * responses.length)]
+                              setChatMessages(prev => [...prev, { role: 'assistant', content: randomResponse }])
+                              setIsProcessing(false)
+                            }, 1500)
+                          }
+                        }}
+                        disabled={!currentQuestion.trim() || isProcessing}
+                        className="px-6 py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white font-bold rounded-lg hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Send
+                      </button>
+                    </div>
+
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <div className="text-xs text-slate-500 w-full mb-1">Suggested questions:</div>
+                      {[
+                        'Show me companies that raised funding last month',
+                        'Which stakeholders have verified emails?',
+                        'What are the latest LinkedIn hiring signals?',
+                        'Show me reverse-engineered competitor jobs'
+                      ].map((suggestion, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => setCurrentQuestion(suggestion)}
+                          className="px-3 py-1 bg-violet-100 text-violet-700 rounded-full text-xs hover:bg-violet-200 transition-colors"
+                        >
+                          {suggestion}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
           )}
