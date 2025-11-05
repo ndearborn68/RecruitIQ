@@ -455,28 +455,86 @@ function App() {
 
         {/* Tab Navigation */}
         <div className="mb-8 bg-white rounded-xl shadow-lg p-2 flex flex-wrap gap-2">
-          {[
-            { id: 'linkedin', label: '💼 LinkedIn Posts', color: 'blue' },
-            { id: 'jobs', label: '🆕 Fresh Jobs', color: 'green' },
-            { id: 'stakeholders', label: '👥 Stakeholders', color: 'purple' },
-            { id: 'monitoring', label: '👁️ Monitoring', color: 'orange' },
-            { id: 'reverse', label: '🔍 Reverse Eng.', color: 'pink' },
-            { id: 'movements', label: '🔄 Job Changes', color: 'indigo' },
-            { id: 'funding', label: '💰 Funding', color: 'emerald' },
-            { id: 'events', label: '📰 Events', color: 'cyan' }
-          ].map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 min-w-[140px] px-4 py-3 rounded-lg font-semibold transition-all ${
-                activeTab === tab.id
-                  ? `bg-${tab.color}-600 text-white shadow-lg scale-105`
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+          <button
+            onClick={() => setActiveTab('linkedin')}
+            className={`flex-1 min-w-[140px] px-4 py-3 rounded-lg font-semibold transition-all ${
+              activeTab === 'linkedin'
+                ? 'bg-blue-600 text-white shadow-lg scale-105'
+                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+            }`}
+          >
+            💼 LinkedIn Posts
+          </button>
+          <button
+            onClick={() => setActiveTab('jobs')}
+            className={`flex-1 min-w-[140px] px-4 py-3 rounded-lg font-semibold transition-all ${
+              activeTab === 'jobs'
+                ? 'bg-green-600 text-white shadow-lg scale-105'
+                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+            }`}
+          >
+            🆕 Fresh Jobs
+          </button>
+          <button
+            onClick={() => setActiveTab('stakeholders')}
+            className={`flex-1 min-w-[140px] px-4 py-3 rounded-lg font-semibold transition-all ${
+              activeTab === 'stakeholders'
+                ? 'bg-purple-600 text-white shadow-lg scale-105'
+                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+            }`}
+          >
+            👥 Stakeholders
+          </button>
+          <button
+            onClick={() => setActiveTab('monitoring')}
+            className={`flex-1 min-w-[140px] px-4 py-3 rounded-lg font-semibold transition-all ${
+              activeTab === 'monitoring'
+                ? 'bg-orange-600 text-white shadow-lg scale-105'
+                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+            }`}
+          >
+            👁️ Monitoring
+          </button>
+          <button
+            onClick={() => setActiveTab('reverse')}
+            className={`flex-1 min-w-[140px] px-4 py-3 rounded-lg font-semibold transition-all ${
+              activeTab === 'reverse'
+                ? 'bg-pink-600 text-white shadow-lg scale-105'
+                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+            }`}
+          >
+            🔍 Reverse Eng.
+          </button>
+          <button
+            onClick={() => setActiveTab('movements')}
+            className={`flex-1 min-w-[140px] px-4 py-3 rounded-lg font-semibold transition-all ${
+              activeTab === 'movements'
+                ? 'bg-indigo-600 text-white shadow-lg scale-105'
+                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+            }`}
+          >
+            🔄 Job Changes
+          </button>
+          <button
+            onClick={() => setActiveTab('funding')}
+            className={`flex-1 min-w-[140px] px-4 py-3 rounded-lg font-semibold transition-all ${
+              activeTab === 'funding'
+                ? 'bg-emerald-600 text-white shadow-lg scale-105'
+                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+            }`}
+          >
+            💰 Funding
+          </button>
+          <button
+            onClick={() => setActiveTab('events')}
+            className={`flex-1 min-w-[140px] px-4 py-3 rounded-lg font-semibold transition-all ${
+              activeTab === 'events'
+                ? 'bg-cyan-600 text-white shadow-lg scale-105'
+                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+            }`}
+          >
+            📰 Events
+          </button>
         </div>
 
         {/* Data Blocks Grid */}
