@@ -351,6 +351,78 @@ const icpLookalikes = [
 
 const COLORS = ['#0ea5e9', '#d946ef', '#22c55e', '#f59e0b', '#ef4444']
 
+// Recruiter-to-Jobs Ratio Data
+const recruiterJobRatioData = [
+  {
+    company: 'Goldman Sachs',
+    totalHRStaff: 45,
+    internalRecruiters: 2,
+    contractRecruiters: 5,
+    openJobs: 127,
+    jobsPerRecruiter: 63.5,
+    scenario: 'High Demand - Low Recruiters',
+    status: 'critical',
+    breakdown: {
+      hrLeaders: 8,
+      hrGeneralists: 25,
+      recruiters: 2,
+      contractRecruiters: 5,
+      coordinators: 10
+    }
+  },
+  {
+    company: 'JP Morgan Chase',
+    totalHRStaff: 120,
+    internalRecruiters: 18,
+    contractRecruiters: 0,
+    openJobs: 89,
+    jobsPerRecruiter: 4.9,
+    scenario: 'Well Staffed',
+    status: 'healthy',
+    breakdown: {
+      hrLeaders: 15,
+      hrGeneralists: 60,
+      recruiters: 18,
+      contractRecruiters: 0,
+      coordinators: 27
+    }
+  },
+  {
+    company: 'Morgan Stanley',
+    totalHRStaff: 38,
+    internalRecruiters: 3,
+    contractRecruiters: 8,
+    openJobs: 156,
+    jobsPerRecruiter: 52.0,
+    scenario: 'High Demand - Low Recruiters',
+    status: 'critical',
+    breakdown: {
+      hrLeaders: 6,
+      hrGeneralists: 20,
+      recruiters: 3,
+      contractRecruiters: 8,
+      coordinators: 9
+    }
+  },
+  {
+    company: 'Citigroup',
+    totalHRStaff: 95,
+    internalRecruiters: 22,
+    contractRecruiters: 0,
+    openJobs: 45,
+    jobsPerRecruiter: 2.0,
+    scenario: 'Over Staffed',
+    status: 'efficient',
+    breakdown: {
+      hrLeaders: 12,
+      hrGeneralists: 45,
+      recruiters: 22,
+      contractRecruiters: 0,
+      coordinators: 16
+    }
+  }
+]
+
 function App() {
   const [activeTab, setActiveTab] = useState('overview')
   const [liveJobs, setLiveJobs] = useState<Job[]>([])
@@ -503,126 +575,167 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50">
+    <div className="min-h-screen">
       {/* Navigation Sidebar */}
-      <div className="fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-gray-900 to-gray-800 shadow-2xl">
-        <div className="p-6">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent">
-            RecruitIQ
-          </h1>
-          <p className="text-gray-400 text-sm mt-1">Intelligence Dashboard</p>
+      <div className="fixed left-0 top-0 h-full w-72 bg-white/90 backdrop-blur-xl shadow-2xl shadow-gray-900/10 border-r border-gray-200/50 z-50">
+        <div className="p-8 pb-6 border-b border-gray-200/50">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-accent-500 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/30">
+              <span className="text-white text-xl font-bold">R</span>
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold gradient-text">
+                RecruitIQ
+              </h1>
+              <p className="text-gray-500 text-xs font-medium mt-0.5">Intelligence Platform</p>
+            </div>
+          </div>
         </div>
 
-        <nav className="mt-8">
+        <nav className="mt-6 px-4 space-y-1">
           {[
             { id: 'overview', label: 'Overview', icon: '📊' },
             { id: 'leads', label: 'Lead Intelligence', icon: '🎯' },
+            { id: 'recruiter-ratio', label: 'Recruiter Analysis', icon: '👥' },
             { id: 'training', label: 'Training Ground', icon: '🎓' },
             { id: 'analytics', label: 'Talent Analytics', icon: '📈' },
-            { id: 'monitoring', label: 'Job Monitoring', icon: '👁️' },
             { id: 'funding', label: 'Funding Events', icon: '💰' },
             { id: 'icp', label: 'ICP Lookalikes', icon: '🎭' }
           ].map(item => (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`w-full text-left px-6 py-3 transition-all duration-200 flex items-center gap-3 ${
-                activeTab === item.id
-                  ? 'bg-gradient-to-r from-primary-600 to-accent-600 text-white border-r-4 border-white'
-                  : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-              }`}
+              className={`sidebar-nav-item ${activeTab === item.id ? 'sidebar-nav-item-active' : ''}`}
             >
               <span className="text-xl">{item.icon}</span>
-              <span className="font-medium">{item.label}</span>
+              <span>{item.label}</span>
             </button>
           ))}
         </nav>
       </div>
 
       {/* Main Content */}
-      <div className="ml-64 p-8">
+      <div className="ml-72 p-8">
         {/* Header */}
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-800 mb-2">
-            {activeTab === 'overview' && 'Dashboard Overview'}
-            {activeTab === 'leads' && 'Lead Intelligence'}
-            {activeTab === 'reverse' && 'Reverse Engineering'}
-            {activeTab === 'analytics' && 'Talent Analytics'}
-            {activeTab === 'monitoring' && 'Job Monitoring'}
-            {activeTab === 'funding' && 'Funding Events'}
-            {activeTab === 'icp' && 'ICP Lookalike Companies'}
-          </h2>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 text-sm text-gray-500">
-              <span>Last updated: {lastUpdated.toLocaleString()}</span>
-              <span className="inline-flex items-center gap-1">
-                <span className="w-2 h-2 bg-success-500 rounded-full animate-pulse"></span>
-                Live from Supabase
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h2 className="section-title">
+              {activeTab === 'overview' && 'Dashboard Overview'}
+              {activeTab === 'leads' && 'Lead Intelligence & Job Monitoring'}
+              {activeTab === 'recruiter-ratio' && 'Recruiter-to-Jobs Ratio Analysis'}
+              {activeTab === 'reverse' && 'Reverse Engineering'}
+              {activeTab === 'analytics' && 'Talent Analytics'}
+              {activeTab === 'funding' && 'Funding Events'}
+              {activeTab === 'icp' && 'ICP Lookalike Companies'}
+              {activeTab === 'training' && 'Training Ground'}
+            </h2>
+            <div className="flex items-center gap-3 mt-2">
+              <div className="flex items-center gap-2 text-sm text-gray-500">
+                <span>Last updated: {lastUpdated.toLocaleString()}</span>
+              </div>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-semibold border border-emerald-200/50">
+                <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                Live
               </span>
             </div>
-            <button
-              onClick={fetchJobs}
-              disabled={loading}
-              className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-            >
-              <span>{loading ? '⟳' : '🔄'}</span>
-              {loading ? 'Refreshing...' : 'Refresh Jobs'}
-            </button>
           </div>
+          <button
+            onClick={fetchJobs}
+            disabled={loading}
+            className="btn-ghost flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <span className={loading ? 'animate-spin' : ''}>{loading ? '⟳' : '🔄'}</span>
+            {loading ? 'Refreshing...' : 'Refresh'}
+          </button>
         </div>
 
         {/* Overview Tab */}
         {activeTab === 'overview' && (
-          <div className="space-y-6 animate-fade-in">
+          <div className="space-y-8 animate-fade-in">
             {/* KPI Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="card card-hover bg-gradient-to-br from-primary-500 to-primary-600 text-white">
-                <div className="text-sm font-medium opacity-90">Leads Delivered This Week</div>
-                <div className="text-4xl font-bold mt-2">96</div>
-                <div className="text-sm mt-2 opacity-80">↑ 18% from last week</div>
+              <div className="kpi-card bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 text-white relative overflow-hidden">
+                <div className="relative z-10">
+                  <div className="text-sm font-semibold opacity-90 mb-1">Leads Delivered</div>
+                  <div className="text-5xl font-bold mb-2">96</div>
+                  <div className="text-xs font-medium opacity-80 flex items-center gap-1">
+                    <span className="text-emerald-300">↑ 18%</span>
+                    <span>from last week</span>
+                  </div>
+                </div>
+                <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-2xl"></div>
               </div>
 
-              <div className="card card-hover bg-gradient-to-br from-accent-500 to-accent-600 text-white">
-                <div className="text-sm font-medium opacity-90">Jobs Analyzed</div>
-                <div className="text-4xl font-bold mt-2">1,342</div>
-                <div className="text-sm mt-2 opacity-80">↑ 18% from last week</div>
+              <div className="kpi-card bg-gradient-to-br from-purple-500 via-purple-600 to-pink-600 text-white relative overflow-hidden">
+                <div className="relative z-10">
+                  <div className="text-sm font-semibold opacity-90 mb-1">Jobs Analyzed</div>
+                  <div className="text-5xl font-bold mb-2">1,342</div>
+                  <div className="text-xs font-medium opacity-80 flex items-center gap-1">
+                    <span className="text-emerald-300">↑ 18%</span>
+                    <span>from last week</span>
+                  </div>
+                </div>
+                <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-2xl"></div>
               </div>
 
-              <div className="card card-hover bg-gradient-to-br from-success-500 to-success-600 text-white">
-                <div className="text-sm font-medium opacity-90">Match Rate</div>
-                <div className="text-4xl font-bold mt-2">87%</div>
-                <div className="text-sm mt-2 opacity-80">↑ 5% from last week</div>
+              <div className="kpi-card bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-600 text-white relative overflow-hidden">
+                <div className="relative z-10">
+                  <div className="text-sm font-semibold opacity-90 mb-1">Match Rate</div>
+                  <div className="text-5xl font-bold mb-2">87%</div>
+                  <div className="text-xs font-medium opacity-80 flex items-center gap-1">
+                    <span className="text-emerald-300">↑ 5%</span>
+                    <span>from last week</span>
+                  </div>
+                </div>
+                <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-2xl"></div>
               </div>
 
-              <div className="card card-hover bg-gradient-to-br from-warning-500 to-warning-600 text-white">
-                <div className="text-sm font-medium opacity-90">New Opportunities</div>
-                <div className="text-4xl font-bold mt-2">56</div>
-                <div className="text-sm mt-2 opacity-80">↑ 12% from last week</div>
+              <div className="kpi-card bg-gradient-to-br from-amber-500 via-orange-500 to-red-500 text-white relative overflow-hidden">
+                <div className="relative z-10">
+                  <div className="text-sm font-semibold opacity-90 mb-1">New Opportunities</div>
+                  <div className="text-5xl font-bold mb-2">56</div>
+                  <div className="text-xs font-medium opacity-80 flex items-center gap-1">
+                    <span className="text-emerald-300">↑ 12%</span>
+                    <span>from last week</span>
+                  </div>
+                </div>
+                <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-2xl"></div>
               </div>
             </div>
 
             {/* Charts Row */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="card card-hover">
-                <h3 className="text-xl font-bold text-gray-800 mb-4">Lead Activity Trend by Industry</h3>
-                <p className="text-sm text-gray-600 mb-4">NY/NJ/CT companies (500-1,000 employees)</p>
+                <div className="mb-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-1">Lead Activity Trend by Industry</h3>
+                  <p className="text-sm text-gray-500">NY/NJ/CT companies (500-1,000 employees)</p>
+                </div>
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={leadActivityByVertical}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis />
-                    <Tooltip />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <XAxis dataKey="month" stroke="#6b7280" />
+                    <YAxis stroke="#6b7280" />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)', 
+                        border: '1px solid #e5e7eb',
+                        borderRadius: '12px',
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                      }} 
+                    />
                     <Legend />
-                    <Line type="monotone" dataKey="Manufacturing" stroke="#f59e0b" strokeWidth={3} />
-                    <Line type="monotone" dataKey="Information Technology" stroke="#0ea5e9" strokeWidth={3} />
-                    <Line type="monotone" dataKey="Finance & Accounting" stroke="#22c55e" strokeWidth={3} />
+                    <Line type="monotone" dataKey="Manufacturing" stroke="#f59e0b" strokeWidth={3} dot={{ r: 4 }} />
+                    <Line type="monotone" dataKey="Information Technology" stroke="#0ea5e9" strokeWidth={3} dot={{ r: 4 }} />
+                    <Line type="monotone" dataKey="Finance & Accounting" stroke="#22c55e" strokeWidth={3} dot={{ r: 4 }} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
 
               <div className="card card-hover">
-                <h3 className="text-xl font-bold text-gray-800 mb-4">Top Companies by Lead Volume</h3>
-                <p className="text-sm text-gray-600 mb-4">Real NY/NJ/CT companies actively hiring</p>
+                <div className="mb-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-1">Top Companies by Lead Volume</h3>
+                  <p className="text-sm text-gray-500">Real NY/NJ/CT companies actively hiring</p>
+                </div>
                 <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
                     <Pie
@@ -639,7 +752,14 @@ function App() {
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)', 
+                        border: '1px solid #e5e7eb',
+                        borderRadius: '12px',
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                      }} 
+                    />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
@@ -649,10 +769,15 @@ function App() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Manufacturing Companies */}
               <div className="card card-hover">
-                <h3 className="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
-                  <span className="text-2xl">🏭</span> Manufacturing
-                </h3>
-                <p className="text-sm text-gray-600 mb-4">{groupedJobs.manufacturing.length} companies tracked</p>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-amber-100 to-orange-100 rounded-xl flex items-center justify-center">
+                    <span className="text-2xl">🏭</span>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900">Manufacturing</h3>
+                    <p className="text-xs text-gray-500">{groupedJobs.manufacturing.length} companies tracked</p>
+                  </div>
+                </div>
                 <div className="space-y-3">
                   {groupedJobs.manufacturing.map((job, i) => (
                     <a
@@ -660,14 +785,14 @@ function App() {
                       href={job.job_link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block bg-gradient-to-r from-warning-50 to-orange-50 p-3 rounded-lg border-l-4 border-warning-500 hover:shadow-md transition-shadow"
+                      className="block bg-gradient-to-r from-amber-50/50 to-orange-50/50 p-4 rounded-xl border border-amber-200/50 hover:shadow-md hover:border-amber-300/50 transition-all group"
                     >
-                      <div className="font-semibold text-gray-800 text-sm">{job.company_name}</div>
-                      <div className="text-xs text-gray-600 mt-1">{job.location} • {job.employee_count} employees</div>
-                      <div className="text-xs text-warning-700 mt-1 font-medium">Hiring: {job.job_title}</div>
-                      <div className="text-xs text-warning-600 mt-1 flex items-center gap-1">
+                      <div className="font-semibold text-gray-900 text-sm mb-1 group-hover:text-amber-700 transition-colors">{job.company_name}</div>
+                      <div className="text-xs text-gray-600 mb-2">{job.location} • {job.employee_count} employees</div>
+                      <div className="text-xs text-amber-700 font-medium mb-2">Hiring: {job.job_title}</div>
+                      <div className="text-xs text-amber-600 flex items-center gap-1.5 font-medium">
                         <span>🔗</span>
-                        <span className="underline">View Job Posting</span>
+                        <span className="group-hover:underline">View Job Posting</span>
                       </div>
                     </a>
                   ))}
@@ -676,10 +801,15 @@ function App() {
 
               {/* IT Companies */}
               <div className="card card-hover">
-                <h3 className="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
-                  <span className="text-2xl">💻</span> Information Technology
-                </h3>
-                <p className="text-sm text-gray-600 mb-4">{groupedJobs.it.length} companies tracked</p>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-xl flex items-center justify-center">
+                    <span className="text-2xl">💻</span>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900">Information Technology</h3>
+                    <p className="text-xs text-gray-500">{groupedJobs.it.length} companies tracked</p>
+                  </div>
+                </div>
                 <div className="space-y-3">
                   {groupedJobs.it.map((job) => (
                     <a
@@ -687,14 +817,14 @@ function App() {
                       href={job.job_link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block bg-gradient-to-r from-primary-50 to-blue-50 p-3 rounded-lg border-l-4 border-primary-500 hover:shadow-md transition-shadow"
+                      className="block bg-gradient-to-r from-blue-50/50 to-indigo-50/50 p-4 rounded-xl border border-blue-200/50 hover:shadow-md hover:border-blue-300/50 transition-all group"
                     >
-                      <div className="font-semibold text-gray-800 text-sm">{job.company_name}</div>
-                      <div className="text-xs text-gray-600 mt-1">{job.location} • {job.employee_count} employees</div>
-                      <div className="text-xs text-primary-700 mt-1 font-medium">Hiring: {job.job_title}</div>
-                      <div className="text-xs text-primary-600 mt-1 flex items-center gap-1">
+                      <div className="font-semibold text-gray-900 text-sm mb-1 group-hover:text-blue-700 transition-colors">{job.company_name}</div>
+                      <div className="text-xs text-gray-600 mb-2">{job.location} • {job.employee_count} employees</div>
+                      <div className="text-xs text-blue-700 font-medium mb-2">Hiring: {job.job_title}</div>
+                      <div className="text-xs text-blue-600 flex items-center gap-1.5 font-medium">
                         <span>🔗</span>
-                        <span className="underline">View Job Posting</span>
+                        <span className="group-hover:underline">View Job Posting</span>
                       </div>
                     </a>
                   ))}
@@ -703,10 +833,15 @@ function App() {
 
               {/* Finance Companies */}
               <div className="card card-hover">
-                <h3 className="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
-                  <span className="text-2xl">💰</span> Finance & Accounting
-                </h3>
-                <p className="text-sm text-gray-600 mb-4">{groupedJobs.finance.length} companies tracked</p>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-xl flex items-center justify-center">
+                    <span className="text-2xl">💰</span>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900">Finance & Accounting</h3>
+                    <p className="text-xs text-gray-500">{groupedJobs.finance.length} companies tracked</p>
+                  </div>
+                </div>
                 <div className="space-y-3">
                   {groupedJobs.finance.map((job) => (
                     <a
@@ -714,14 +849,14 @@ function App() {
                       href={job.job_link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block bg-gradient-to-r from-success-50 to-green-50 p-3 rounded-lg border-l-4 border-success-500 hover:shadow-md transition-shadow"
+                      className="block bg-gradient-to-r from-emerald-50/50 to-teal-50/50 p-4 rounded-xl border border-emerald-200/50 hover:shadow-md hover:border-emerald-300/50 transition-all group"
                     >
-                      <div className="font-semibold text-gray-800 text-sm">{job.company_name}</div>
-                      <div className="text-xs text-gray-600 mt-1">{job.location} • {job.employee_count} employees</div>
-                      <div className="text-xs text-success-700 mt-1 font-medium">Hiring: {job.job_title}</div>
-                      <div className="text-xs text-success-600 mt-1 flex items-center gap-1">
+                      <div className="font-semibold text-gray-900 text-sm mb-1 group-hover:text-emerald-700 transition-colors">{job.company_name}</div>
+                      <div className="text-xs text-gray-600 mb-2">{job.location} • {job.employee_count} employees</div>
+                      <div className="text-xs text-emerald-700 font-medium mb-2">Hiring: {job.job_title}</div>
+                      <div className="text-xs text-emerald-600 flex items-center gap-1.5 font-medium">
                         <span>🔗</span>
-                        <span className="underline">View Job Posting</span>
+                        <span className="group-hover:underline">View Job Posting</span>
                       </div>
                     </a>
                   ))}
@@ -731,26 +866,124 @@ function App() {
           </div>
         )}
 
-        {/* Leads Tab */}
+        {/* Leads Tab - Combined with Job Monitoring */}
         {activeTab === 'leads' && (
-          <div className="space-y-6 animate-fade-in">
-            <div className="flex gap-4 mb-6">
+          <div className="space-y-8 animate-fade-in">
+            {/* Search and Actions */}
+            <div className="flex gap-3 mb-6">
               <input
                 type="text"
                 placeholder="Search jobs, companies, or people..."
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="input-modern flex-1"
               />
-              <button className="btn-primary">🔍 Search</button>
-              <button className="btn-secondary">📥 Export</button>
+              <button className="btn-primary flex items-center gap-2">
+                <span>🔍</span>
+                <span>Search</span>
+              </button>
+              <button className="btn-ghost flex items-center gap-2">
+                <span>📥</span>
+                <span>Export</span>
+              </button>
             </div>
+
+            {/* Job Monitoring Section */}
+            <div className="card">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-xl flex items-center justify-center">
+                  <span className="text-2xl">👁️</span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">Job Monitoring</h3>
+                  <p className="text-sm text-gray-500">Track career page changes and new job postings</p>
+                </div>
+              </div>
+              
+              <div className="space-y-4 mb-6">
+                {jobMonitoring.map((monitor, i) => (
+                  <div key={i} className="card card-hover bg-gradient-to-r from-gray-50/50 to-blue-50/30 border border-gray-200/50">
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <h4 className="text-lg font-bold text-gray-900">{monitor.company}</h4>
+                          <span className={`badge ${monitor.status === 'Change Detected' ? 'badge-warning' : 'badge-success'}`}>
+                            {monitor.status}
+                          </span>
+                        </div>
+                        <div className="text-sm text-gray-600 mb-1">
+                          <span className="font-semibold">Career Page:</span>
+                          <a href={monitor.careerPageUrl} target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:underline ml-2">
+                            {monitor.careerPageUrl}
+                          </a>
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          Last checked: {monitor.lastChecked}
+                        </div>
+                      </div>
+                    </div>
+
+                    {monitor.changes.length > 0 && (
+                      <div className="space-y-2 mt-4 pt-4 border-t border-gray-200/50">
+                        <h5 className="font-semibold text-gray-700 mb-2">Recent Changes:</h5>
+                        {monitor.changes.map((change, j) => (
+                          <div key={j} className={`p-3 rounded-xl border-l-4 ${
+                            change.type === 'New Job'
+                              ? 'bg-emerald-50/50 border-emerald-500'
+                              : 'bg-amber-50/50 border-amber-500'
+                          }`}>
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold">
+                                {change.type === 'New Job' ? '✅' : '❌'}
+                              </span>
+                              <span className="font-semibold">{change.type}:</span>
+                              <span className="text-gray-800">{change.title}</span>
+                            </div>
+                            <div className="text-sm text-gray-600 ml-6 mt-1">
+                              {change.dept} • {change.date}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <div className="bg-gray-50/50 border-2 border-dashed border-gray-300/50 rounded-xl p-6">
+                <div className="text-center">
+                  <div className="text-3xl mb-2">👁️</div>
+                  <h4 className="text-lg font-semibold text-gray-700 mb-2">Add New Monitor</h4>
+                  <p className="text-gray-600 mb-4 text-sm">Track career page changes for any company</p>
+                  <div className="flex gap-3 max-w-2xl mx-auto">
+                    <input
+                      type="text"
+                      placeholder="Company name or career page URL..."
+                      className="input-modern flex-1"
+                    />
+                    <button className="btn-primary">Start Monitoring</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Lead Intelligence Section */}
+            <div className="card">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl flex items-center justify-center">
+                  <span className="text-2xl">🎯</span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">Lead Intelligence</h3>
+                  <p className="text-sm text-gray-500">Detailed contact information and hiring insights</p>
+                </div>
+              </div>
 
             <div className="space-y-4">
               {mockLeads.map(lead => (
                 <div key={lead.id} className="card card-hover animate-slide-up">
-                  <div className="flex justify-between items-start mb-4">
+                  <div className="flex justify-between items-start mb-6">
                     <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-xl font-bold text-gray-800">{lead.jobTitle}</h3>
+                      <div className="flex items-center gap-3 mb-3 flex-wrap">
+                        <h3 className="text-2xl font-bold text-gray-900">{lead.jobTitle}</h3>
                         <span className={`badge ${lead.status === 'Active' ? 'badge-success' : 'badge-warning'}`}>
                           {lead.status}
                         </span>
@@ -758,11 +991,11 @@ function App() {
                           {lead.matchScore}% Match
                         </span>
                       </div>
-                      <div className="text-gray-600 flex items-center gap-2 mb-3">
+                      <div className="text-gray-600 flex items-center gap-2 mb-1 flex-wrap">
                         <span className="font-semibold text-primary-600">{lead.company}</span>
-                        <span>•</span>
+                        <span className="text-gray-400">•</span>
                         <span>{lead.location}</span>
-                        <span>•</span>
+                        <span className="text-gray-400">•</span>
                         <span>Posted {lead.postedDate}</span>
                       </div>
                     </div>
@@ -896,12 +1129,206 @@ function App() {
                     </div>
                   </div>
 
-                  <div className="mt-4 pt-4 border-t border-gray-200 flex gap-3">
+                  <div className="mt-6 pt-6 border-t border-gray-200/50 flex gap-3">
                     <button className="btn-primary flex-1">View Full Details</button>
-                    <button className="btn-secondary">Save to CRM</button>
+                    <button className="btn-ghost">Save to CRM</button>
                   </div>
                 </div>
               ))}
+            </div>
+            </div>
+          </div>
+        )}
+
+        {/* Recruiter-to-Jobs Ratio Tab */}
+        {activeTab === 'recruiter-ratio' && (
+          <div className="space-y-8 animate-fade-in">
+            {/* Header Section */}
+            <div className="card bg-gradient-to-br from-indigo-50/50 to-purple-50/30 border border-indigo-200/50">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                  <span className="text-3xl">👥</span>
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-900">Recruiter-to-Jobs Ratio Analysis</h3>
+                  <p className="text-sm text-gray-600 mt-1">Visualizing staffing efficiency and hiring capacity across companies</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Company Cards Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {recruiterJobRatioData.map((company, idx) => (
+                <div key={idx} className={`card card-hover border-2 ${
+                  company.status === 'critical' ? 'border-rose-300 bg-gradient-to-br from-rose-50/50 to-orange-50/30' :
+                  company.status === 'healthy' ? 'border-emerald-300 bg-gradient-to-br from-emerald-50/50 to-teal-50/30' :
+                  'border-blue-300 bg-gradient-to-br from-blue-50/50 to-indigo-50/30'
+                }`}>
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <h4 className="text-xl font-bold text-gray-900 mb-2">{company.company}</h4>
+                      <span className={`badge ${
+                        company.status === 'critical' ? 'badge-danger' :
+                        company.status === 'healthy' ? 'badge-success' :
+                        'badge-primary'
+                      }`}>
+                        {company.scenario}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Key Metrics */}
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-gray-200/50">
+                      <div className="text-xs font-semibold text-gray-500 mb-1">Total HR Staff</div>
+                      <div className="text-2xl font-bold text-gray-900">{company.totalHRStaff}</div>
+                    </div>
+                    <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-gray-200/50">
+                      <div className="text-xs font-semibold text-gray-500 mb-1">Internal Recruiters</div>
+                      <div className="text-2xl font-bold text-gray-900">{company.internalRecruiters}</div>
+                      {company.contractRecruiters > 0 && (
+                        <div className="text-xs text-rose-600 font-semibold mt-1">
+                          + {company.contractRecruiters} Contract
+                        </div>
+                      )}
+                    </div>
+                    <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-gray-200/50">
+                      <div className="text-xs font-semibold text-gray-500 mb-1">Open Jobs</div>
+                      <div className="text-2xl font-bold text-gray-900">{company.openJobs}</div>
+                    </div>
+                    <div className={`bg-white/60 backdrop-blur-sm rounded-xl p-4 border ${
+                      company.jobsPerRecruiter > 30 ? 'border-rose-300' :
+                      company.jobsPerRecruiter < 5 ? 'border-emerald-300' :
+                      'border-amber-300'
+                    }`}>
+                      <div className="text-xs font-semibold text-gray-500 mb-1">Jobs per Recruiter</div>
+                      <div className={`text-2xl font-bold ${
+                        company.jobsPerRecruiter > 30 ? 'text-rose-600' :
+                        company.jobsPerRecruiter < 5 ? 'text-emerald-600' :
+                        'text-amber-600'
+                      }`}>
+                        {company.jobsPerRecruiter.toFixed(1)}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Visual Ratio Bar */}
+                  <div className="mb-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-semibold text-gray-600">Recruiter Capacity</span>
+                      <span className="text-xs font-semibold text-gray-600">
+                        {company.jobsPerRecruiter > 30 ? '⚠️ Overloaded' :
+                         company.jobsPerRecruiter < 5 ? '✅ Optimal' :
+                         '⚡ High'}
+                      </span>
+                    </div>
+                    <div className="relative h-10 bg-gray-200 rounded-full overflow-hidden shadow-inner">
+                      <div className="absolute inset-0 flex">
+                        {/* Recruiters bar */}
+                        <div 
+                          className="bg-red-600 flex items-center justify-center text-white text-xs font-bold shadow-md rounded-full"
+                          style={{ width: `${Math.min((company.internalRecruiters / (company.openJobs + company.internalRecruiters)) * 100, 100)}%` }}
+                        >
+                          {company.internalRecruiters} {company.contractRecruiters > 0 ? `+ ${company.contractRecruiters} Contract` : ''} Recruiters
+                        </div>
+                        {/* Jobs bar */}
+                        <div 
+                          className={`flex items-center justify-center text-white text-xs font-bold shadow-md ${
+                            company.jobsPerRecruiter > 30 ? 'bg-gradient-to-r from-rose-500 to-red-500' :
+                            company.jobsPerRecruiter < 5 ? 'bg-gradient-to-r from-emerald-500 to-teal-500' :
+                            'bg-gradient-to-r from-amber-500 to-orange-500'
+                          }`}
+                          style={{ width: `${Math.min((company.openJobs / (company.openJobs + company.internalRecruiters)) * 100, 100)}%` }}
+                        >
+                          {company.openJobs} Jobs
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* HR Breakdown */}
+                  <div className="bg-white/40 backdrop-blur-sm rounded-xl p-4 border border-gray-200/50">
+                    <div className="text-xs font-semibold text-gray-600 mb-3">HR Staff Breakdown</div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 rounded-full bg-indigo-500"></div>
+                          <span className="text-xs text-gray-700">Leaders: {company.breakdown.hrLeaders}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                          <span className="text-xs text-gray-700">Generalists: {company.breakdown.hrGeneralists}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 rounded-full bg-purple-500"></div>
+                          <span className="text-xs text-gray-700">Recruiters: {company.breakdown.recruiters}</span>
+                        </div>
+                        {company.breakdown.contractRecruiters > 0 && (
+                          <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 rounded-full bg-red-600"></div>
+                            <span className="text-xs text-gray-700 font-semibold">Contract Recruiters: {company.breakdown.contractRecruiters}</span>
+                          </div>
+                        )}
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 rounded-full bg-pink-500"></div>
+                          <span className="text-xs text-gray-700">Coordinators: {company.breakdown.coordinators}</span>
+                        </div>
+                      </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Comparison Chart */}
+            <div className="card bg-gradient-to-br from-indigo-50/50 to-purple-50/30 border border-indigo-200/50">
+              <h4 className="text-xl font-bold text-gray-900 mb-6">Scenario Comparison</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-white/60 backdrop-blur-sm rounded-xl p-6 border border-rose-200/50">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="text-3xl">⚠️</span>
+                    <h5 className="text-lg font-bold text-gray-900">High Demand - Low Recruiters</h5>
+                  </div>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Companies with many open jobs but few internal recruiters face significant hiring challenges. 
+                    This scenario indicates high opportunity for external recruiting support.
+                  </p>
+                  <div className="space-y-3">
+                    {recruiterJobRatioData.filter(c => c.status === 'critical').map((c, i) => (
+                      <div key={i} className="flex items-center justify-between p-3 bg-rose-50/50 rounded-lg border border-rose-200/50">
+                        <div>
+                          <span className="font-semibold text-gray-900">{c.company}</span>
+                          <div className="text-xs text-gray-600 mt-1">
+                            {c.internalRecruiters} recruiters • {c.openJobs} jobs
+                          </div>
+                        </div>
+                        <span className="font-bold text-rose-600 text-lg">{c.jobsPerRecruiter.toFixed(1)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="bg-white/60 backdrop-blur-sm rounded-xl p-6 border border-emerald-200/50">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="text-3xl">✅</span>
+                    <h5 className="text-lg font-bold text-gray-900">Well Staffed / Efficient</h5>
+                  </div>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Companies with balanced recruiter-to-job ratios have better hiring capacity and efficiency. 
+                    These companies may have less urgent need for external support.
+                  </p>
+                  <div className="space-y-3">
+                    {recruiterJobRatioData.filter(c => c.status !== 'critical').map((c, i) => (
+                      <div key={i} className="flex items-center justify-between p-3 bg-emerald-50/50 rounded-lg border border-emerald-200/50">
+                        <div>
+                          <span className="font-semibold text-gray-900">{c.company}</span>
+                          <div className="text-xs text-gray-600 mt-1">
+                            {c.internalRecruiters} recruiters • {c.openJobs} jobs
+                          </div>
+                        </div>
+                        <span className="font-bold text-emerald-600 text-lg">{c.jobsPerRecruiter.toFixed(1)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -1205,74 +1632,6 @@ Requirements:
           </div>
         )}
 
-        {/* Job Monitoring Tab */}
-        {activeTab === 'monitoring' && (
-          <div className="space-y-6 animate-fade-in">
-            {jobMonitoring.map((monitor, i) => (
-              <div key={i} className="card card-hover animate-slide-up">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-xl font-bold text-gray-800">{monitor.company}</h3>
-                      <span className={`badge ${monitor.status === 'Change Detected' ? 'badge-warning' : 'badge-success'}`}>
-                        {monitor.status}
-                      </span>
-                    </div>
-                    <div className="text-sm text-gray-600 mb-1">
-                      <span className="font-semibold">Career Page:</span>
-                      <a href={monitor.careerPageUrl} className="text-primary-600 hover:underline ml-2">
-                        {monitor.careerPageUrl}
-                      </a>
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      Last checked: {monitor.lastChecked}
-                    </div>
-                  </div>
-                </div>
-
-                {monitor.changes.length > 0 && (
-                  <div className="space-y-2 mt-4">
-                    <h4 className="font-semibold text-gray-700">Recent Changes:</h4>
-                    {monitor.changes.map((change, j) => (
-                      <div key={j} className={`p-3 rounded-lg border-l-4 ${
-                        change.type === 'New Job'
-                          ? 'bg-success-50 border-success-500'
-                          : 'bg-warning-50 border-warning-500'
-                      }`}>
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold">
-                            {change.type === 'New Job' ? '✅' : '❌'}
-                          </span>
-                          <span className="font-semibold">{change.type}:</span>
-                          <span className="text-gray-800">{change.title}</span>
-                        </div>
-                        <div className="text-sm text-gray-600 ml-6">
-                          {change.dept} • {change.date}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-
-            <div className="card bg-gray-50 border-2 border-dashed border-gray-300">
-              <div className="text-center py-8">
-                <div className="text-4xl mb-3">👁️</div>
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">Add New Monitor</h3>
-                <p className="text-gray-600 mb-4">Track career page changes for any company</p>
-                <div className="flex gap-3 max-w-2xl mx-auto">
-                  <input
-                    type="text"
-                    placeholder="Company name or career page URL..."
-                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  />
-                  <button className="btn-primary">Start Monitoring</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Funding Events Tab */}
         {activeTab === 'funding' && (
