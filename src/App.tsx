@@ -163,6 +163,149 @@ const mockReverseEngineering = [
   }
 ]
 
+// Recruiting Capacity Analysis Data
+const mockCapacityData = [
+  {
+    id: 1,
+    company: 'TechVision Corp',
+    location: 'New York, NY',
+    employees: 850,
+    openJobs: 47,
+    internalRecruiters: 2,
+    hrStaff: 3,
+    recruitingTeam: [
+      { name: 'Sarah Mitchell', title: 'Senior Technical Recruiter', linkedin: '#', experience: '5 years' },
+      { name: 'Michael Chen', title: 'Technical Recruiter', linkedin: '#', experience: '2 years' }
+    ],
+    hrTeam: [
+      { name: 'Jennifer Lopez', title: 'VP Human Resources', linkedin: '#', activeRecruiting: false },
+      { name: 'David Park', title: 'HR Business Partner', linkedin: '#', activeRecruiting: true },
+      { name: 'Amanda Stone', title: 'HR Coordinator', linkedin: '#', activeRecruiting: false }
+    ],
+    jobsPerRecruiter: 23.5,
+    capacityScore: 15, // Out of 100, lower = more overwhelmed
+    agencyOpportunity: 'Extreme',
+    industryBenchmark: 8, // Industry standard jobs per recruiter
+    estimatedAgencySpend: '$940,000/year',
+    recentHires: 34,
+    timeToFill: 67, // days
+    industryAvgTimeToFill: 42
+  },
+  {
+    id: 2,
+    company: 'FinanceHub Solutions',
+    location: 'Jersey City, NJ',
+    employees: 1200,
+    openJobs: 89,
+    internalRecruiters: 3,
+    hrStaff: 5,
+    recruitingTeam: [
+      { name: 'Robert Johnson', title: 'Director of Talent Acquisition', linkedin: '#', experience: '8 years' },
+      { name: 'Lisa Wang', title: 'Senior Recruiter', linkedin: '#', experience: '4 years' },
+      { name: 'Carlos Rodriguez', title: 'Technical Recruiter', linkedin: '#', experience: '1 year' }
+    ],
+    hrTeam: [
+      { name: 'Patricia Williams', title: 'Chief People Officer', linkedin: '#', activeRecruiting: false },
+      { name: 'Mark Thompson', title: 'HR Director', linkedin: '#', activeRecruiting: true },
+      { name: 'Emily Chen', title: 'HR Manager', linkedin: '#', activeRecruiting: true },
+      { name: 'James Lee', title: 'HR Generalist', linkedin: '#', activeRecruiting: false },
+      { name: 'Rachel Green', title: 'HR Assistant', linkedin: '#', activeRecruiting: false }
+    ],
+    jobsPerRecruiter: 29.7,
+    capacityScore: 8,
+    agencyOpportunity: 'Critical',
+    industryBenchmark: 8,
+    estimatedAgencySpend: '$1.78M/year',
+    recentHires: 56,
+    timeToFill: 82,
+    industryAvgTimeToFill: 42
+  },
+  {
+    id: 3,
+    company: 'DataStream Inc',
+    location: 'Stamford, CT',
+    employees: 650,
+    openJobs: 31,
+    internalRecruiters: 4,
+    hrStaff: 2,
+    recruitingTeam: [
+      { name: 'Katherine Adams', title: 'Head of Recruiting', linkedin: '#', experience: '7 years' },
+      { name: 'Thomas Brown', title: 'Technical Recruiter', linkedin: '#', experience: '3 years' },
+      { name: 'Nicole Martinez', title: 'Recruiter', linkedin: '#', experience: '2 years' },
+      { name: 'Andrew Kim', title: 'Junior Recruiter', linkedin: '#', experience: '6 months' }
+    ],
+    hrTeam: [
+      { name: 'Susan Clark', title: 'VP of People', linkedin: '#', activeRecruiting: false },
+      { name: 'Daniel White', title: 'HR Business Partner', linkedin: '#', activeRecruiting: true }
+    ],
+    jobsPerRecruiter: 7.8,
+    capacityScore: 78,
+    agencyOpportunity: 'Low',
+    industryBenchmark: 8,
+    estimatedAgencySpend: '$155,000/year',
+    recentHires: 42,
+    timeToFill: 38,
+    industryAvgTimeToFill: 42
+  },
+  {
+    id: 4,
+    company: 'CloudNine Technologies',
+    location: 'Newark, NJ',
+    employees: 980,
+    openJobs: 156,
+    internalRecruiters: 5,
+    hrStaff: 4,
+    recruitingTeam: [
+      { name: 'Michelle Davis', title: 'VP Talent Acquisition', linkedin: '#', experience: '10 years' },
+      { name: 'Brandon Hall', title: 'Senior Technical Recruiter', linkedin: '#', experience: '6 years' },
+      { name: 'Stephanie Young', title: 'Technical Recruiter', linkedin: '#', experience: '3 years' },
+      { name: 'Jason Scott', title: 'Recruiter', linkedin: '#', experience: '2 years' },
+      { name: 'Melissa Turner', title: 'Recruiting Coordinator', linkedin: '#', experience: '1 year' }
+    ],
+    hrTeam: [
+      { name: 'Christopher Moore', title: 'CHRO', linkedin: '#', activeRecruiting: false },
+      { name: 'Angela Harris', title: 'HR Director', linkedin: '#', activeRecruiting: true },
+      { name: 'Kevin Wright', title: 'HR Manager', linkedin: '#', activeRecruiting: true },
+      { name: 'Laura Anderson', title: 'HR Specialist', linkedin: '#', activeRecruiting: false }
+    ],
+    jobsPerRecruiter: 31.2,
+    capacityScore: 5,
+    agencyOpportunity: 'Extreme',
+    industryBenchmark: 8,
+    estimatedAgencySpend: '$3.12M/year',
+    recentHires: 89,
+    timeToFill: 95,
+    industryAvgTimeToFill: 42
+  },
+  {
+    id: 5,
+    company: 'MediTech Systems',
+    location: 'New York, NY',
+    employees: 720,
+    openJobs: 52,
+    internalRecruiters: 3,
+    hrStaff: 3,
+    recruitingTeam: [
+      { name: 'Rebecca Taylor', title: 'Talent Acquisition Lead', linkedin: '#', experience: '5 years' },
+      { name: 'Nathan Lewis', title: 'Senior Recruiter', linkedin: '#', experience: '4 years' },
+      { name: 'Olivia Martinez', title: 'Recruiter', linkedin: '#', experience: '2 years' }
+    ],
+    hrTeam: [
+      { name: 'Frank Robinson', title: 'VP HR', linkedin: '#', activeRecruiting: false },
+      { name: 'Grace Hill', title: 'HR Manager', linkedin: '#', activeRecruiting: true },
+      { name: 'Henry Foster', title: 'HR Coordinator', linkedin: '#', activeRecruiting: false }
+    ],
+    jobsPerRecruiter: 17.3,
+    capacityScore: 35,
+    agencyOpportunity: 'High',
+    industryBenchmark: 8,
+    estimatedAgencySpend: '$780,000/year',
+    recentHires: 38,
+    timeToFill: 58,
+    industryAvgTimeToFill: 42
+  }
+]
+
 // Real NY/NJ/CT companies with LIVE verified job links (October 2025)
 const realCompanies = {
   manufacturing: [
@@ -503,126 +646,325 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20">
       {/* Navigation Sidebar */}
-      <div className="fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-gray-900 to-gray-800 shadow-2xl">
-        <div className="p-6">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent">
-            RecruitIQ
-          </h1>
-          <p className="text-gray-400 text-sm mt-1">Intelligence Dashboard</p>
+      <div className="fixed left-0 top-0 h-full w-72 bg-gradient-to-b from-dark-950 via-dark-900 to-dark-950 shadow-hard border-r border-dark-800">
+        <div className="p-8 border-b border-dark-800">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center shadow-glow">
+              <span className="text-white text-xl font-bold">R</span>
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent">
+                RecruitIQ
+              </h1>
+              <p className="text-gray-500 text-xs">Intelligence Platform</p>
+            </div>
+          </div>
+          <div className="mt-4 flex items-center gap-2 px-3 py-2 bg-success-500/10 border border-success-500/20 rounded-lg">
+            <span className="w-2 h-2 bg-success-500 rounded-full animate-pulse"></span>
+            <span className="text-xs font-semibold text-success-400">Live Data Feed Active</span>
+          </div>
         </div>
 
-        <nav className="mt-8">
+        <nav className="mt-6 px-4">
           {[
-            { id: 'overview', label: 'Overview', icon: '📊' },
-            { id: 'leads', label: 'Lead Intelligence', icon: '🎯' },
-            { id: 'training', label: 'Training Ground', icon: '🎓' },
-            { id: 'analytics', label: 'Talent Analytics', icon: '📈' },
-            { id: 'monitoring', label: 'Job Monitoring', icon: '👁️' },
-            { id: 'funding', label: 'Funding Events', icon: '💰' },
-            { id: 'icp', label: 'ICP Lookalikes', icon: '🎭' }
+            { id: 'overview', label: 'Dashboard', icon: '📊', desc: 'Overview & Analytics' },
+            { id: 'leads', label: 'Lead Intelligence', icon: '🎯', desc: 'Contact Discovery' },
+            { id: 'capacity', label: 'Recruiting Capacity', icon: '⚖️', desc: 'Agency Opportunity' },
+            { id: 'training', label: 'Training Ground', icon: '🎓', desc: 'AI Training' },
+            { id: 'analytics', label: 'Talent Analytics', icon: '📈', desc: 'Movement Tracking' },
+            { id: 'monitoring', label: 'Job Monitoring', icon: '👁️', desc: 'Career Pages' },
+            { id: 'funding', label: 'Funding Events', icon: '💰', desc: 'VC Intelligence' },
+            { id: 'icp', label: 'ICP Lookalikes', icon: '🎭', desc: 'Company Matching' }
           ].map(item => (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`w-full text-left px-6 py-3 transition-all duration-200 flex items-center gap-3 ${
+              className={`w-full text-left px-4 py-3 mb-2 rounded-xl transition-all duration-300 flex items-center gap-3 group ${
                 activeTab === item.id
-                  ? 'bg-gradient-to-r from-primary-600 to-accent-600 text-white border-r-4 border-white'
-                  : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                  ? 'bg-gradient-to-r from-primary-600 to-accent-600 text-white shadow-glow'
+                  : 'text-gray-400 hover:bg-dark-800 hover:text-white'
               }`}
             >
-              <span className="text-xl">{item.icon}</span>
-              <span className="font-medium">{item.label}</span>
+              <span className="text-2xl">{item.icon}</span>
+              <div className="flex-1">
+                <div className="font-semibold text-sm">{item.label}</div>
+                <div className={`text-xs mt-0.5 ${activeTab === item.id ? 'text-white/70' : 'text-gray-600'}`}>
+                  {item.desc}
+                </div>
+              </div>
             </button>
           ))}
         </nav>
+
+        <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-dark-800">
+          <div className="text-xs text-gray-600">
+            <div className="flex items-center justify-between mb-1">
+              <span>Database Status</span>
+              <span className="text-success-400 font-semibold">Connected</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span>Last Sync</span>
+              <span className="text-gray-400">{new Date().toLocaleTimeString()}</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Main Content */}
-      <div className="ml-64 p-8">
+      <div className="ml-72 p-8">
         {/* Header */}
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-800 mb-2">
-            {activeTab === 'overview' && 'Dashboard Overview'}
-            {activeTab === 'leads' && 'Lead Intelligence'}
-            {activeTab === 'reverse' && 'Reverse Engineering'}
-            {activeTab === 'analytics' && 'Talent Analytics'}
-            {activeTab === 'monitoring' && 'Job Monitoring'}
-            {activeTab === 'funding' && 'Funding Events'}
-            {activeTab === 'icp' && 'ICP Lookalike Companies'}
-          </h2>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 text-sm text-gray-500">
-              <span>Last updated: {lastUpdated.toLocaleString()}</span>
-              <span className="inline-flex items-center gap-1">
-                <span className="w-2 h-2 bg-success-500 rounded-full animate-pulse"></span>
-                Live from Supabase
-              </span>
+        <div className="mb-10">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-4xl font-bold bg-gradient-to-r from-gray-900 via-primary-700 to-accent-700 bg-clip-text text-transparent mb-2">
+                {activeTab === 'overview' && 'Intelligence Dashboard'}
+                {activeTab === 'leads' && 'Lead Intelligence Center'}
+                {activeTab === 'capacity' && 'Recruiting Capacity Analysis'}
+                {activeTab === 'reverse' && 'Reverse Engineering'}
+                {activeTab === 'analytics' && 'Talent Movement Analytics'}
+                {activeTab === 'monitoring' && 'Career Page Monitoring'}
+                {activeTab === 'funding' && 'Funding Intelligence'}
+                {activeTab === 'icp' && 'ICP Lookalike Discovery'}
+              </h2>
+              <p className="text-gray-600">
+                {activeTab === 'overview' && 'Comprehensive recruitment intelligence across all data sources'}
+                {activeTab === 'leads' && 'Discover decision-makers, hiring managers, and recruiters'}
+                {activeTab === 'capacity' && 'Identify companies overwhelmed with hiring needs - prime agency opportunities'}
+                {activeTab === 'analytics' && 'Track candidate movement and hiring trends'}
+                {activeTab === 'monitoring' && 'Real-time job posting change detection'}
+                {activeTab === 'funding' && 'VC-backed companies and funding opportunities'}
+                {activeTab === 'icp' && 'Find companies matching your ideal customer profile'}
+              </p>
             </div>
-            <button
-              onClick={fetchJobs}
-              disabled={loading}
-              className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-            >
-              <span>{loading ? '⟳' : '🔄'}</span>
-              {loading ? 'Refreshing...' : 'Refresh Jobs'}
-            </button>
+            <div className="flex items-center gap-3">
+              <div className="text-right text-sm">
+                <div className="text-gray-500">Last updated</div>
+                <div className="font-semibold text-gray-700">{lastUpdated.toLocaleTimeString()}</div>
+              </div>
+              <button
+                onClick={fetchJobs}
+                disabled={loading}
+                className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <span>{loading ? '⟳' : '🔄'}</span>
+                {loading ? 'Refreshing...' : 'Refresh Data'}
+              </button>
+            </div>
           </div>
+
+          {/* Platform Capabilities Banner */}
+          {activeTab === 'overview' && (
+            <div className="flex gap-3 flex-wrap">
+              <div className="showcase-badge">
+                <span>🎯</span>
+                <span>50,000+ Companies Tracked</span>
+              </div>
+              <div className="showcase-badge">
+                <span>👥</span>
+                <span>10M+ Contact Records</span>
+              </div>
+              <div className="showcase-badge">
+                <span>⚡</span>
+                <span>Real-Time Job Monitoring</span>
+              </div>
+              <div className="showcase-badge">
+                <span>🔍</span>
+                <span>AI-Powered Matching</span>
+              </div>
+              <div className="showcase-badge">
+                <span>💰</span>
+                <span>Funding Data Integration</span>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Overview Tab */}
         {activeTab === 'overview' && (
-          <div className="space-y-6 animate-fade-in">
-            {/* KPI Cards */}
+          <div className="space-y-8 animate-fade-in">
+            {/* Primary KPI Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="card card-hover bg-gradient-to-br from-primary-500 to-primary-600 text-white">
-                <div className="text-sm font-medium opacity-90">Leads Delivered This Week</div>
-                <div className="text-4xl font-bold mt-2">96</div>
-                <div className="text-sm mt-2 opacity-80">↑ 18% from last week</div>
+              <div className="stat-card group">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-soft">
+                    <span className="text-white text-2xl">🎯</span>
+                  </div>
+                  <span className="badge badge-success">+18%</span>
+                </div>
+                <div className="stat-label">Leads Delivered This Week</div>
+                <div className="stat-number">96</div>
+                <div className="mt-2 text-sm text-gray-600">
+                  <span className="text-success-600 font-semibold">↑ 18%</span> from last week
+                </div>
+                <div className="mt-4 h-1 bg-gray-200 rounded-full overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-primary-500 to-primary-600 rounded-full" style={{width: '72%'}}></div>
+                </div>
               </div>
 
-              <div className="card card-hover bg-gradient-to-br from-accent-500 to-accent-600 text-white">
-                <div className="text-sm font-medium opacity-90">Jobs Analyzed</div>
-                <div className="text-4xl font-bold mt-2">1,342</div>
-                <div className="text-sm mt-2 opacity-80">↑ 18% from last week</div>
+              <div className="stat-card group">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent-500 to-accent-600 flex items-center justify-center shadow-soft">
+                    <span className="text-white text-2xl">📊</span>
+                  </div>
+                  <span className="badge badge-primary">Active</span>
+                </div>
+                <div className="stat-label">Jobs Analyzed</div>
+                <div className="stat-number">1,342</div>
+                <div className="mt-2 text-sm text-gray-600">
+                  <span className="text-success-600 font-semibold">↑ 18%</span> from last week
+                </div>
+                <div className="mt-4 h-1 bg-gray-200 rounded-full overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-accent-500 to-accent-600 rounded-full" style={{width: '89%'}}></div>
+                </div>
               </div>
 
-              <div className="card card-hover bg-gradient-to-br from-success-500 to-success-600 text-white">
-                <div className="text-sm font-medium opacity-90">Match Rate</div>
-                <div className="text-4xl font-bold mt-2">87%</div>
-                <div className="text-sm mt-2 opacity-80">↑ 5% from last week</div>
+              <div className="stat-card group">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-success-500 to-success-600 flex items-center justify-center shadow-soft">
+                    <span className="text-white text-2xl">✓</span>
+                  </div>
+                  <span className="badge badge-success">High</span>
+                </div>
+                <div className="stat-label">Match Rate</div>
+                <div className="stat-number">87%</div>
+                <div className="mt-2 text-sm text-gray-600">
+                  <span className="text-success-600 font-semibold">↑ 5%</span> from last week
+                </div>
+                <div className="mt-4 h-1 bg-gray-200 rounded-full overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-success-500 to-success-600 rounded-full" style={{width: '87%'}}></div>
+                </div>
               </div>
 
-              <div className="card card-hover bg-gradient-to-br from-warning-500 to-warning-600 text-white">
-                <div className="text-sm font-medium opacity-90">New Opportunities</div>
-                <div className="text-4xl font-bold mt-2">56</div>
-                <div className="text-sm mt-2 opacity-80">↑ 12% from last week</div>
+              <div className="stat-card group">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-warning-500 to-warning-600 flex items-center justify-center shadow-soft">
+                    <span className="text-white text-2xl">🚀</span>
+                  </div>
+                  <span className="badge badge-warning">+12%</span>
+                </div>
+                <div className="stat-label">New Opportunities</div>
+                <div className="stat-number">56</div>
+                <div className="mt-2 text-sm text-gray-600">
+                  <span className="text-success-600 font-semibold">↑ 12%</span> from last week
+                </div>
+                <div className="mt-4 h-1 bg-gray-200 rounded-full overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-warning-500 to-warning-600 rounded-full" style={{width: '65%'}}></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Data Capabilities Showcase */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="card-glass p-6 border-l-4 border-primary-500">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="text-3xl">👥</div>
+                  <div>
+                    <div className="text-2xl font-bold text-gray-900">10M+</div>
+                    <div className="text-sm text-gray-600">Contact Records</div>
+                  </div>
+                </div>
+                <div className="flex gap-2 flex-wrap mt-3">
+                  <span className="data-pill">Hiring Managers</span>
+                  <span className="data-pill">HR Leaders</span>
+                  <span className="data-pill">Recruiters</span>
+                </div>
+              </div>
+
+              <div className="card-glass p-6 border-l-4 border-accent-500">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="text-3xl">🏢</div>
+                  <div>
+                    <div className="text-2xl font-bold text-gray-900">50K+</div>
+                    <div className="text-sm text-gray-600">Companies Tracked</div>
+                  </div>
+                </div>
+                <div className="flex gap-2 flex-wrap mt-3">
+                  <span className="data-pill">500-1000 employees</span>
+                  <span className="data-pill">NY/NJ/CT</span>
+                </div>
+              </div>
+
+              <div className="card-glass p-6 border-l-4 border-success-500">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="text-3xl">⚡</div>
+                  <div>
+                    <div className="text-2xl font-bold text-gray-900">Real-Time</div>
+                    <div className="text-sm text-gray-600">Job Monitoring</div>
+                  </div>
+                </div>
+                <div className="flex gap-2 flex-wrap mt-3">
+                  <span className="data-pill">Live Updates</span>
+                  <span className="data-pill">Change Detection</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Analytics & Insights */}
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="section-title">Real-Time Analytics & Insights</h3>
+                <div className="flex gap-2">
+                  <span className="badge badge-primary">Live Data</span>
+                  <span className="badge badge-accent">Updated Now</span>
+                </div>
               </div>
             </div>
 
             {/* Charts Row */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="card card-hover">
-                <h3 className="text-xl font-bold text-gray-800 mb-4">Lead Activity Trend by Industry</h3>
-                <p className="text-sm text-gray-600 mb-4">NY/NJ/CT companies (500-1,000 employees)</p>
+              <div className="card-premium card-hover">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900">Lead Activity Trend</h3>
+                    <p className="text-sm text-gray-600 mt-1">by Industry Vertical</p>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-xs text-gray-500">Coverage</div>
+                    <div className="text-sm font-bold text-primary-600">NY/NJ/CT</div>
+                  </div>
+                </div>
+                <div className="mb-4 flex gap-2 flex-wrap">
+                  <span className="data-pill">500-1K employees</span>
+                  <span className="data-pill">3 Industries</span>
+                </div>
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={leadActivityByVertical}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey="Manufacturing" stroke="#f59e0b" strokeWidth={3} />
-                    <Line type="monotone" dataKey="Information Technology" stroke="#0ea5e9" strokeWidth={3} />
-                    <Line type="monotone" dataKey="Finance & Accounting" stroke="#22c55e" strokeWidth={3} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <XAxis dataKey="month" stroke="#6b7280" style={{ fontSize: '12px' }} />
+                    <YAxis stroke="#6b7280" style={{ fontSize: '12px' }} />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'white',
+                        border: '1px solid #e5e7eb',
+                        borderRadius: '12px',
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                      }}
+                    />
+                    <Legend wrapperStyle={{ fontSize: '12px' }} />
+                    <Line type="monotone" dataKey="Manufacturing" stroke="#f59e0b" strokeWidth={3} dot={{ fill: '#f59e0b', r: 4 }} />
+                    <Line type="monotone" dataKey="Information Technology" stroke="#3b82f6" strokeWidth={3} dot={{ fill: '#3b82f6', r: 4 }} />
+                    <Line type="monotone" dataKey="Finance & Accounting" stroke="#22c55e" strokeWidth={3} dot={{ fill: '#22c55e', r: 4 }} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
 
-              <div className="card card-hover">
-                <h3 className="text-xl font-bold text-gray-800 mb-4">Top Companies by Lead Volume</h3>
-                <p className="text-sm text-gray-600 mb-4">Real NY/NJ/CT companies actively hiring</p>
+              <div className="card-premium card-hover">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900">Top Companies</h3>
+                    <p className="text-sm text-gray-600 mt-1">by Lead Volume</p>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-xs text-gray-500">Total</div>
+                    <div className="text-sm font-bold text-accent-600">287 Leads</div>
+                  </div>
+                </div>
+                <div className="mb-4 flex gap-2 flex-wrap">
+                  <span className="data-pill">Active Hiring</span>
+                  <span className="data-pill">Verified Contacts</span>
+                </div>
                 <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
                     <Pie
@@ -639,7 +981,14 @@ function App() {
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'white',
+                        border: '1px solid #e5e7eb',
+                        borderRadius: '12px',
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                      }}
+                    />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
@@ -902,6 +1251,222 @@ function App() {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* Recruiting Capacity Analysis Tab */}
+        {activeTab === 'capacity' && (
+          <div className="space-y-8 animate-fade-in">
+            {/* Overview Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="stat-card">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-danger-500 to-danger-600 flex items-center justify-center shadow-soft">
+                    <span className="text-white text-2xl">🔴</span>
+                  </div>
+                </div>
+                <div className="stat-label">Critical Capacity</div>
+                <div className="stat-number">{mockCapacityData.filter(c => c.agencyOpportunity === 'Critical' || c.agencyOpportunity === 'Extreme').length}</div>
+                <div className="mt-2 text-sm text-gray-600">Companies overwhelmed</div>
+              </div>
+
+              <div className="stat-card">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-warning-500 to-warning-600 flex items-center justify-center shadow-soft">
+                    <span className="text-white text-2xl">⚠️</span>
+                  </div>
+                </div>
+                <div className="stat-label">High Opportunity</div>
+                <div className="stat-number">{mockCapacityData.filter(c => c.agencyOpportunity === 'High').length}</div>
+                <div className="mt-2 text-sm text-gray-600">Above industry average</div>
+              </div>
+
+              <div className="stat-card">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent-500 to-accent-600 flex items-center justify-center shadow-soft">
+                    <span className="text-white text-2xl">💰</span>
+                  </div>
+                </div>
+                <div className="stat-label">Est. Total Spend</div>
+                <div className="stat-number text-2xl">$7.6M</div>
+                <div className="mt-2 text-sm text-gray-600">Annual agency budget</div>
+              </div>
+
+              <div className="stat-card">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-soft">
+                    <span className="text-white text-2xl">⚖️</span>
+                  </div>
+                </div>
+                <div className="stat-label">Avg Jobs/Recruiter</div>
+                <div className="stat-number">21.9</div>
+                <div className="mt-2 text-sm text-gray-600">vs industry std. 8</div>
+              </div>
+            </div>
+
+            {/* Company Cards */}
+            <div className="space-y-6">
+              {mockCapacityData.map(company => {
+                const opportunityColor = {
+                  'Extreme': 'danger',
+                  'Critical': 'danger',
+                  'High': 'warning',
+                  'Medium': 'primary',
+                  'Low': 'success'
+                }[company.agencyOpportunity] || 'primary'
+
+                const activeRecruiting = company.hrTeam.filter(hr => hr.activeRecruiting).length
+
+                return (
+                  <div key={company.id} className="card-premium card-hover">
+                    {/* Header */}
+                    <div className="flex items-start justify-between mb-6">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <h3 className="text-2xl font-bold text-gray-900">{company.company}</h3>
+                          <span className={`badge badge-${opportunityColor}`}>
+                            {company.agencyOpportunity} Opportunity
+                          </span>
+                        </div>
+                        <div className="text-gray-600 flex items-center gap-3 text-sm">
+                          <span>📍 {company.location}</span>
+                          <span>•</span>
+                          <span>👥 {company.employees} employees</span>
+                          <span>•</span>
+                          <span className="font-semibold text-primary-600">{company.openJobs} Open Jobs</span>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-3xl font-bold text-gray-900">{company.jobsPerRecruiter.toFixed(1)}</div>
+                        <div className="text-xs text-gray-600">Jobs per Recruiter</div>
+                        <div className="text-xs text-gray-500 mt-1">Industry avg: {company.industryBenchmark}</div>
+                      </div>
+                    </div>
+
+                    {/* Capacity Score */}
+                    <div className="mb-6">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-semibold text-gray-700">Recruiting Capacity Score</span>
+                        <span className="text-sm font-bold" style={{color: company.capacityScore < 30 ? '#ef4444' : company.capacityScore < 60 ? '#f59e0b' : '#22c55e'}}>
+                          {company.capacityScore}/100
+                        </span>
+                      </div>
+                      <div className="progress-bar h-3">
+                        <div
+                          className="progress-fill"
+                          style={{
+                            width: `${company.capacityScore}%`,
+                            background: company.capacityScore < 30
+                              ? 'linear-gradient(to right, #ef4444, #dc2626)'
+                              : company.capacityScore < 60
+                                ? 'linear-gradient(to right, #f59e0b, #d97706)'
+                                : 'linear-gradient(to right, #22c55e, #16a34a)'
+                          }}
+                        ></div>
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        {company.capacityScore < 30 && '⚠️ Severely understaffed - High agency dependence likely'}
+                        {company.capacityScore >= 30 && company.capacityScore < 60 && '⚖️ Moderate strain - Agency support probable'}
+                        {company.capacityScore >= 60 && '✓ Good capacity - Limited agency need'}
+                      </div>
+                    </div>
+
+                    {/* Team Breakdown */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                      {/* Internal Recruiters */}
+                      <div className="bg-primary-50/50 p-4 rounded-xl border border-primary-200/50">
+                        <div className="flex items-center justify-between mb-3">
+                          <h4 className="font-semibold text-gray-900 flex items-center gap-2">
+                            <span>🎯</span> Internal Recruiters
+                          </h4>
+                          <span className="badge badge-primary">{company.internalRecruiters} Total</span>
+                        </div>
+                        <div className="space-y-2">
+                          {company.recruitingTeam.map((recruiter, i) => (
+                            <div key={i} className="bg-white p-3 rounded-lg border border-primary-100">
+                              <div className="font-medium text-gray-900 text-sm">{recruiter.name}</div>
+                              <div className="text-xs text-gray-600 mt-0.5">{recruiter.title}</div>
+                              <div className="text-xs text-primary-600 mt-1 font-medium">
+                                📊 ~{Math.round(company.openJobs / company.internalRecruiters)} jobs per person
+                              </div>
+                              <div className="text-xs text-gray-500">Experience: {recruiter.experience}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* HR Team */}
+                      <div className="bg-accent-50/50 p-4 rounded-xl border border-accent-200/50">
+                        <div className="flex items-center justify-between mb-3">
+                          <h4 className="font-semibold text-gray-900 flex items-center gap-2">
+                            <span>🏢</span> HR Staff
+                          </h4>
+                          <span className="badge badge-accent">{company.hrStaff} Total</span>
+                        </div>
+                        <div className="space-y-2">
+                          {company.hrTeam.map((hr, i) => (
+                            <div key={i} className={`bg-white p-3 rounded-lg border ${hr.activeRecruiting ? 'border-accent-300' : 'border-gray-200'}`}>
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <div className="font-medium text-gray-900 text-sm">{hr.name}</div>
+                                  <div className="text-xs text-gray-600 mt-0.5">{hr.title}</div>
+                                </div>
+                                {hr.activeRecruiting ? (
+                                  <span className="badge badge-success text-xs">Active Recruiting</span>
+                                ) : (
+                                  <span className="badge badge-warning text-xs">Admin Only</span>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="mt-3 text-xs text-gray-600 bg-white p-2 rounded border border-accent-200">
+                          <strong>{activeRecruiting}</strong> of {company.hrStaff} actively recruiting (rest are admin/compliance)
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Key Metrics */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                      <div>
+                        <div className="text-xs text-gray-600 mb-1">Effective Recruiting Staff</div>
+                        <div className="text-xl font-bold text-gray-900">{company.internalRecruiters + activeRecruiting}</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-gray-600 mb-1">Time to Fill</div>
+                        <div className="text-xl font-bold text-danger-600">{company.timeToFill} days</div>
+                        <div className="text-xs text-gray-500">Industry avg: {company.industryAvgTimeToFill}d</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-gray-600 mb-1">Recent Hires (6mo)</div>
+                        <div className="text-xl font-bold text-gray-900">{company.recentHires}</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-gray-600 mb-1">Est. Agency Spend</div>
+                        <div className="text-xl font-bold text-success-600">{company.estimatedAgencySpend}</div>
+                      </div>
+                    </div>
+
+                    {/* Insight */}
+                    <div className={`mt-6 p-4 rounded-xl border-l-4 ${
+                      company.agencyOpportunity === 'Extreme' || company.agencyOpportunity === 'Critical'
+                        ? 'bg-danger-50 border-danger-500'
+                        : company.agencyOpportunity === 'High'
+                          ? 'bg-warning-50 border-warning-500'
+                          : 'bg-success-50 border-success-500'
+                    }`}>
+                      <div className="font-semibold text-gray-900 mb-1">💡 Agency Opportunity Insight</div>
+                      <div className="text-sm text-gray-700">
+                        {company.agencyOpportunity === 'Extreme' && `With ${company.jobsPerRecruiter.toFixed(1)} jobs per recruiter (${Math.round((company.jobsPerRecruiter / company.industryBenchmark - 1) * 100)}% above industry standard), this company is severely overwhelmed. Their ${company.timeToFill}-day time-to-fill is ${company.timeToFill - company.industryAvgTimeToFill} days slower than average. They likely rely heavily on external agencies.`}
+                        {company.agencyOpportunity === 'Critical' && `With ${company.jobsPerRecruiter.toFixed(1)} jobs per recruiter, this company is critically understaffed. Extended time-to-fill (${company.timeToFill} days) indicates strong agency dependence.`}
+                        {company.agencyOpportunity === 'High' && `${company.jobsPerRecruiter.toFixed(1)} jobs per recruiter is ${Math.round((company.jobsPerRecruiter / company.industryBenchmark - 1) * 100)}% above industry standard. Time-to-fill of ${company.timeToFill} days suggests moderate agency usage for overflow.`}
+                        {company.agencyOpportunity === 'Low' && `With ${company.jobsPerRecruiter.toFixed(1)} jobs per recruiter, this company is well-staffed and within industry norms. Limited agency opportunity.`}
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
             </div>
           </div>
         )}
