@@ -255,7 +255,7 @@ export class OrchestratorAgent {
       if (error) {
         console.error('  ❌ Search API error:', error)
         // Fall back to mock data on error
-        return this.createMockResults(query, jobData)
+        return this.createMockResultsWithQuery(query, jobData)
       }
 
       if (data && data.results && Array.isArray(data.results)) {
@@ -265,19 +265,19 @@ export class OrchestratorAgent {
 
       // No results found
       console.log('  ⚠️ No results from search, using fallback')
-      return this.createMockResults(query, jobData)
+      return this.createMockResultsWithQuery(query, jobData)
 
     } catch (error) {
       console.error('  ❌ Web search failed:', error)
       // Fall back to mock data if API fails
-      return this.createMockResults(query, jobData)
+      return this.createMockResultsWithQuery(query, jobData)
     }
   }
 
   /**
    * Create mock results as fallback (for development or when API fails)
    */
-  private createMockResults(query: string, jobData: any): any[] {
+  private createMockResultsWithQuery(query: string, jobData: any): any[] {
     const results: any[] = []
 
     // Common healthcare/accounting companies in Austin, TX
