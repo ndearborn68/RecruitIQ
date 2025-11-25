@@ -2,6 +2,40 @@ import { useState, useEffect } from 'react'
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { supabase, type Job } from './lib/supabase'
 import { OrchestratorAgent } from './agents/orchestrator'
+import {
+  LayoutDashboard,
+  Target,
+  Users,
+  GraduationCap,
+  TrendingUp,
+  DollarSign,
+  UserSearch,
+  Factory,
+  Monitor,
+  Wallet,
+  Search,
+  Download,
+  Eye,
+  ExternalLink,
+  Check,
+  X,
+  AlertTriangle,
+  Clipboard,
+  Mail,
+  Phone,
+  User,
+  Building2,
+  RefreshCw,
+  Loader2,
+  Lightbulb,
+  BarChart3,
+  Zap,
+  CheckCircle2,
+  XCircle,
+  UserPlus,
+  FileText,
+  Plus
+} from 'lucide-react'
 
 // Mock data with real LinkedIn profiles
 const mockLeads = [
@@ -543,7 +577,7 @@ function App() {
           matched_job_url: results.matchedJobUrl,
           created_at: new Date().toISOString()
         })
-        console.log('✅ Analysis saved to Supabase')
+        console.log('Analysis saved to Supabase')
       } catch (dbError) {
         console.error('Failed to save to Supabase:', dbError)
         // Don't fail the whole analysis if DB save fails
@@ -594,20 +628,20 @@ function App() {
 
         <nav className="mt-6 px-4 space-y-1">
           {[
-            { id: 'overview', label: 'Overview', icon: '📊' },
-            { id: 'leads', label: 'Lead Intelligence', icon: '🎯' },
-            { id: 'recruiter-ratio', label: 'Recruiter Analysis', icon: '👥' },
-            { id: 'training', label: 'Training Ground', icon: '🎓' },
-            { id: 'analytics', label: 'Talent Analytics', icon: '📈' },
-            { id: 'funding', label: 'Funding Events', icon: '💰' },
-            { id: 'icp', label: 'ICP Lookalikes', icon: '🎭' }
+            { id: 'overview', label: 'Overview', icon: LayoutDashboard },
+            { id: 'leads', label: 'Lead Intelligence', icon: Target },
+            { id: 'recruiter-ratio', label: 'Recruiter Analysis', icon: Users },
+            { id: 'training', label: 'Training Ground', icon: GraduationCap },
+            { id: 'analytics', label: 'Talent Analytics', icon: TrendingUp },
+            { id: 'funding', label: 'Funding Events', icon: DollarSign },
+            { id: 'icp', label: 'ICP Lookalikes', icon: UserSearch }
           ].map(item => (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
               className={`sidebar-nav-item ${activeTab === item.id ? 'sidebar-nav-item-active' : ''}`}
             >
-              <span className="text-xl">{item.icon}</span>
+              <item.icon className="w-5 h-5" />
               <span>{item.label}</span>
             </button>
           ))}
@@ -644,7 +678,7 @@ function App() {
             disabled={loading}
             className="btn-ghost flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <span className={loading ? 'animate-spin' : ''}>{loading ? '⟳' : '🔄'}</span>
+            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
             {loading ? 'Refreshing...' : 'Refresh'}
           </button>
         </div>
@@ -771,7 +805,7 @@ function App() {
               <div className="card card-hover">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-12 h-12 bg-gradient-to-br from-amber-100 to-orange-100 rounded-xl flex items-center justify-center">
-                    <span className="text-2xl">🏭</span>
+                    <Factory className="w-6 h-6 text-amber-600" />
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-gray-900">Manufacturing</h3>
@@ -791,7 +825,7 @@ function App() {
                       <div className="text-xs text-gray-600 mb-2">{job.location} • {job.employee_count} employees</div>
                       <div className="text-xs text-amber-700 font-medium mb-2">Hiring: {job.job_title}</div>
                       <div className="text-xs text-amber-600 flex items-center gap-1.5 font-medium">
-                        <span>🔗</span>
+                        <ExternalLink className="w-3 h-3" />
                         <span className="group-hover:underline">View Job Posting</span>
                       </div>
                     </a>
@@ -803,7 +837,7 @@ function App() {
               <div className="card card-hover">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-xl flex items-center justify-center">
-                    <span className="text-2xl">💻</span>
+                    <Monitor className="w-6 h-6 text-blue-600" />
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-gray-900">Information Technology</h3>
@@ -823,7 +857,7 @@ function App() {
                       <div className="text-xs text-gray-600 mb-2">{job.location} • {job.employee_count} employees</div>
                       <div className="text-xs text-blue-700 font-medium mb-2">Hiring: {job.job_title}</div>
                       <div className="text-xs text-blue-600 flex items-center gap-1.5 font-medium">
-                        <span>🔗</span>
+                        <ExternalLink className="w-3 h-3" />
                         <span className="group-hover:underline">View Job Posting</span>
                       </div>
                     </a>
@@ -835,7 +869,7 @@ function App() {
               <div className="card card-hover">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-12 h-12 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-xl flex items-center justify-center">
-                    <span className="text-2xl">💰</span>
+                    <Wallet className="w-6 h-6 text-emerald-600" />
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-gray-900">Finance & Accounting</h3>
@@ -855,7 +889,7 @@ function App() {
                       <div className="text-xs text-gray-600 mb-2">{job.location} • {job.employee_count} employees</div>
                       <div className="text-xs text-emerald-700 font-medium mb-2">Hiring: {job.job_title}</div>
                       <div className="text-xs text-emerald-600 flex items-center gap-1.5 font-medium">
-                        <span>🔗</span>
+                        <ExternalLink className="w-3 h-3" />
                         <span className="group-hover:underline">View Job Posting</span>
                       </div>
                     </a>
@@ -877,11 +911,11 @@ function App() {
                 className="input-modern flex-1"
               />
               <button className="btn-primary flex items-center gap-2">
-                <span>🔍</span>
+                <Search className="w-4 h-4" />
                 <span>Search</span>
               </button>
               <button className="btn-ghost flex items-center gap-2">
-                <span>📥</span>
+                <Download className="w-4 h-4" />
                 <span>Export</span>
               </button>
             </div>
@@ -890,7 +924,7 @@ function App() {
             <div className="card">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-xl flex items-center justify-center">
-                  <span className="text-2xl">👁️</span>
+                  <Eye className="w-6 h-6 text-blue-600" />
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-gray-900">Job Monitoring</h3>
@@ -931,9 +965,10 @@ function App() {
                               : 'bg-amber-50/50 border-amber-500'
                           }`}>
                             <div className="flex items-center gap-2">
-                              <span className="font-bold">
-                                {change.type === 'New Job' ? '✅' : '❌'}
-                              </span>
+                              {change.type === 'New Job'
+                                ? <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                                : <XCircle className="w-4 h-4 text-amber-600" />
+                              }
                               <span className="font-semibold">{change.type}:</span>
                               <span className="text-gray-800">{change.title}</span>
                             </div>
@@ -950,7 +985,9 @@ function App() {
 
               <div className="bg-gray-50/50 border-2 border-dashed border-gray-300/50 rounded-xl p-6">
                 <div className="text-center">
-                  <div className="text-3xl mb-2">👁️</div>
+                  <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-xl flex items-center justify-center">
+                    <Plus className="w-6 h-6 text-blue-600" />
+                  </div>
                   <h4 className="text-lg font-semibold text-gray-700 mb-2">Add New Monitor</h4>
                   <p className="text-gray-600 mb-4 text-sm">Track career page changes for any company</p>
                   <div className="flex gap-3 max-w-2xl mx-auto">
@@ -969,7 +1006,7 @@ function App() {
             <div className="card">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl flex items-center justify-center">
-                  <span className="text-2xl">🎯</span>
+                  <Target className="w-6 h-6 text-purple-600" />
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-gray-900">Lead Intelligence</h3>
@@ -1004,7 +1041,7 @@ function App() {
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div>
                       <h4 className="font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                        <span>👤</span> Hiring Managers
+                        <User className="w-4 h-4" /> Hiring Managers
                       </h4>
                       <ul className="space-y-2">
                         {lead.hiringManagers.map((manager, i) => (
@@ -1015,7 +1052,7 @@ function App() {
                               rel="noopener noreferrer"
                               className="text-primary-600 hover:text-primary-800 hover:underline font-medium flex items-center gap-2"
                             >
-                              <span>🔗</span>
+                              <ExternalLink className="w-3 h-3 flex-shrink-0" />
                               <div>
                                 <div>{manager.name}</div>
                                 <div className="text-xs text-gray-500 font-normal">{manager.title}</div>
@@ -1026,7 +1063,7 @@ function App() {
                       </ul>
 
                       <h4 className="font-semibold text-gray-700 mt-4 mb-2 flex items-center gap-2">
-                        <span>🏢</span> HR Leaders
+                        <Building2 className="w-4 h-4" /> HR Leaders
                       </h4>
                       <ul className="space-y-2">
                         {lead.hrLeaders.map((hr, i) => (
@@ -1037,7 +1074,7 @@ function App() {
                               rel="noopener noreferrer"
                               className="text-primary-600 hover:text-primary-800 hover:underline font-medium flex items-center gap-2"
                             >
-                              <span>🔗</span>
+                              <ExternalLink className="w-3 h-3 flex-shrink-0" />
                               <div>
                                 <div>{hr.name}</div>
                                 <div className="text-xs text-gray-500 font-normal">{hr.title}</div>
@@ -1048,7 +1085,7 @@ function App() {
                       </ul>
 
                       <h4 className="font-semibold text-gray-700 mt-4 mb-2 flex items-center gap-2">
-                        <span>🎯</span> Recruiters
+                        <UserPlus className="w-4 h-4" /> Recruiters
                       </h4>
                       <ul className="space-y-2">
                         {lead.recruiters.map((recruiter, i) => (
@@ -1059,7 +1096,7 @@ function App() {
                               rel="noopener noreferrer"
                               className="text-primary-600 hover:text-primary-800 hover:underline font-medium flex items-center gap-2"
                             >
-                              <span>🔗</span>
+                              <ExternalLink className="w-3 h-3 flex-shrink-0" />
                               <div>
                                 <div>{recruiter.name}</div>
                                 <div className="text-xs text-gray-500 font-normal">{recruiter.title}</div>
@@ -1072,7 +1109,7 @@ function App() {
 
                     <div>
                       <h4 className="font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                        <span>✉️</span> Email & Deliverability
+                        <Mail className="w-4 h-4" /> Email & Deliverability
                       </h4>
                       <div className="space-y-2">
                         {lead.emails.map((emailObj, i) => (
@@ -1083,13 +1120,13 @@ function App() {
                           } px-3 py-2 rounded-lg text-sm`}>
                             <div className="flex items-center justify-between mb-1">
                               <span className="font-mono text-gray-800">{emailObj.email}</span>
-                              <button className="text-primary-600 hover:text-primary-800">📋</button>
+                              <button className="text-primary-600 hover:text-primary-800"><Clipboard className="w-4 h-4" /></button>
                             </div>
                             <div className="flex items-center gap-2 text-xs">
-                              <span className={`font-semibold ${
+                              <span className={`font-semibold flex items-center gap-1 ${
                                 emailObj.status === 'verified' ? 'text-success-700' : 'text-warning-700'
                               }`}>
-                                {emailObj.status === 'verified' ? '✓ Verified Email' : '⚠ Catch-all Risky Email'}
+                                {emailObj.status === 'verified' ? <><Check className="w-3 h-3" /> Verified Email</> : <><AlertTriangle className="w-3 h-3" /> Catch-all Risky Email</>}
                               </span>
                               <span className="text-gray-500">•</span>
                               <span className={`font-bold ${
@@ -1103,7 +1140,7 @@ function App() {
                       </div>
 
                       <h4 className="font-semibold text-gray-700 mt-4 mb-2 flex items-center gap-2">
-                        <span>📞</span> Phone Numbers
+                        <Phone className="w-4 h-4" /> Phone Numbers
                       </h4>
                       <div className="space-y-2">
                         {lead.phones.map((phoneObj, i) => (
@@ -1114,13 +1151,13 @@ function App() {
                           } px-3 py-2 rounded-lg text-sm`}>
                             <div className="flex items-center justify-between mb-1">
                               <span className="font-mono text-gray-800">{phoneObj.number}</span>
-                              <button className="text-primary-600 hover:text-primary-800">📋</button>
+                              <button className="text-primary-600 hover:text-primary-800"><Clipboard className="w-4 h-4" /></button>
                             </div>
                             <div className="text-xs">
-                              <span className={`font-semibold ${
+                              <span className={`font-semibold flex items-center gap-1 ${
                                 phoneObj.verified ? 'text-success-700' : 'text-gray-600'
                               }`}>
-                                {phoneObj.verified ? '✓ Phone Number Verified' : '✗ Phone Number Not Verified'}
+                                {phoneObj.verified ? <><Check className="w-3 h-3" /> Phone Number Verified</> : <><X className="w-3 h-3" /> Phone Number Not Verified</>}
                               </span>
                             </div>
                           </div>
@@ -1147,7 +1184,7 @@ function App() {
             <div className="card bg-gradient-to-br from-indigo-50/50 to-purple-50/30 border border-indigo-200/50">
               <div className="flex items-center gap-4 mb-4">
                 <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/30">
-                  <span className="text-3xl">👥</span>
+                  <Users className="w-8 h-8 text-white" />
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold text-gray-900">Recruiter-to-Jobs Ratio Analysis</h3>
@@ -1216,10 +1253,10 @@ function App() {
                   <div className="mb-4">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-xs font-semibold text-gray-600">Recruiter Capacity</span>
-                      <span className="text-xs font-semibold text-gray-600">
-                        {company.jobsPerRecruiter > 30 ? '⚠️ Overloaded' :
-                         company.jobsPerRecruiter < 5 ? '✅ Optimal' :
-                         '⚡ High'}
+                      <span className="text-xs font-semibold text-gray-600 flex items-center gap-1">
+                        {company.jobsPerRecruiter > 30 ? <><AlertTriangle className="w-3 h-3 text-rose-600" /> Overloaded</> :
+                         company.jobsPerRecruiter < 5 ? <><CheckCircle2 className="w-3 h-3 text-emerald-600" /> Optimal</> :
+                         <><Zap className="w-3 h-3 text-amber-600" /> High</>}
                       </span>
                     </div>
                     <div className="relative h-10 bg-gray-200 rounded-full overflow-hidden shadow-inner">
@@ -1284,11 +1321,13 @@ function App() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="bg-white/60 backdrop-blur-sm rounded-xl p-6 border border-rose-200/50">
                   <div className="flex items-center gap-3 mb-4">
-                    <span className="text-3xl">⚠️</span>
+                    <div className="w-10 h-10 bg-rose-100 rounded-xl flex items-center justify-center">
+                      <AlertTriangle className="w-5 h-5 text-rose-600" />
+                    </div>
                     <h5 className="text-lg font-bold text-gray-900">High Demand - Low Recruiters</h5>
                   </div>
                   <p className="text-sm text-gray-600 mb-4">
-                    Companies with many open jobs but few internal recruiters face significant hiring challenges. 
+                    Companies with many open jobs but few internal recruiters face significant hiring challenges.
                     This scenario indicates high opportunity for external recruiting support.
                   </p>
                   <div className="space-y-3">
@@ -1307,11 +1346,13 @@ function App() {
                 </div>
                 <div className="bg-white/60 backdrop-blur-sm rounded-xl p-6 border border-emerald-200/50">
                   <div className="flex items-center gap-3 mb-4">
-                    <span className="text-3xl">✅</span>
+                    <div className="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center">
+                      <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+                    </div>
                     <h5 className="text-lg font-bold text-gray-900">Well Staffed / Efficient</h5>
                   </div>
                   <p className="text-sm text-gray-600 mb-4">
-                    Companies with balanced recruiter-to-job ratios have better hiring capacity and efficiency. 
+                    Companies with balanced recruiter-to-job ratios have better hiring capacity and efficiency.
                     These companies may have less urgent need for external support.
                   </p>
                   <div className="space-y-3">
@@ -1614,17 +1655,23 @@ Requirements:
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="card card-hover text-center">
-                <div className="text-4xl mb-2">🔄</div>
+                <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-xl flex items-center justify-center">
+                  <RefreshCw className="w-6 h-6 text-primary-600" />
+                </div>
                 <div className="text-3xl font-bold text-primary-600">84</div>
                 <div className="text-gray-600 mt-1">Candidates Open to Work</div>
               </div>
               <div className="card card-hover text-center">
-                <div className="text-4xl mb-2">📊</div>
+                <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl flex items-center justify-center">
+                  <BarChart3 className="w-6 h-6 text-accent-600" />
+                </div>
                 <div className="text-3xl font-bold text-accent-600">67%</div>
                 <div className="text-gray-600 mt-1">Movement from Oracle</div>
               </div>
               <div className="card card-hover text-center">
-                <div className="text-4xl mb-2">⚡</div>
+                <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-xl flex items-center justify-center">
+                  <Zap className="w-6 h-6 text-success-600" />
+                </div>
                 <div className="text-3xl font-bold text-success-600">23</div>
                 <div className="text-gray-600 mt-1">Active Transitions This Week</div>
               </div>
@@ -1638,17 +1685,23 @@ Requirements:
           <div className="space-y-6 animate-fade-in">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
               <div className="card card-hover text-center bg-gradient-to-br from-success-500 to-success-600 text-white">
-                <div className="text-4xl mb-2">💰</div>
+                <div className="w-12 h-12 mx-auto mb-3 bg-white/20 rounded-xl flex items-center justify-center">
+                  <DollarSign className="w-6 h-6" />
+                </div>
                 <div className="text-3xl font-bold">$700M</div>
                 <div className="mt-1 opacity-90">Total Raised This Month</div>
               </div>
               <div className="card card-hover text-center bg-gradient-to-br from-primary-500 to-primary-600 text-white">
-                <div className="text-4xl mb-2">🏢</div>
+                <div className="w-12 h-12 mx-auto mb-3 bg-white/20 rounded-xl flex items-center justify-center">
+                  <Building2 className="w-6 h-6" />
+                </div>
                 <div className="text-3xl font-bold">12</div>
                 <div className="mt-1 opacity-90">Companies Funded</div>
               </div>
               <div className="card card-hover text-center bg-gradient-to-br from-accent-500 to-accent-600 text-white">
-                <div className="text-4xl mb-2">🎯</div>
+                <div className="w-12 h-12 mx-auto mb-3 bg-white/20 rounded-xl flex items-center justify-center">
+                  <Target className="w-6 h-6" />
+                </div>
                 <div className="text-3xl font-bold">8</div>
                 <div className="mt-1 opacity-90">High Relevance Matches</div>
               </div>
@@ -1693,9 +1746,10 @@ Requirements:
                   </div>
 
                   {event.relevance === 'High' && (
-                    <div className="mt-3 bg-success-50 border-l-4 border-success-500 p-3 rounded">
+                    <div className="mt-3 bg-success-50 border-l-4 border-success-500 p-3 rounded flex items-start gap-2">
+                      <Lightbulb className="w-4 h-4 text-success-600 mt-0.5 flex-shrink-0" />
                       <div className="text-sm text-success-800">
-                        <span className="font-bold">💡 Opportunity:</span> This company matches your client's ICP.
+                        <span className="font-bold">Opportunity:</span> This company matches your client's ICP.
                         Expected hiring surge in engineering roles within 30-60 days.
                       </div>
                     </div>
@@ -1710,7 +1764,10 @@ Requirements:
         {activeTab === 'icp' && (
           <div className="space-y-6 animate-fade-in">
             <div className="card bg-gradient-to-r from-primary-500 to-accent-500 text-white">
-              <h3 className="text-xl font-bold mb-2">🎭 AI-Powered ICP Lookalike Finder</h3>
+              <div className="flex items-center gap-3 mb-2">
+                <UserSearch className="w-6 h-6" />
+                <h3 className="text-xl font-bold">AI-Powered ICP Lookalike Finder</h3>
+              </div>
               <p className="opacity-90">
                 Our system identifies companies similar to your ideal customer profile based on industry, size, funding stage,
                 tech stack, and market positioning.
@@ -1783,7 +1840,9 @@ Requirements:
 
             <div className="card bg-gray-50 border-2 border-dashed border-gray-300">
               <div className="text-center py-8">
-                <div className="text-4xl mb-3">🔍</div>
+                <div className="w-14 h-14 mx-auto mb-4 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-xl flex items-center justify-center">
+                  <Search className="w-7 h-7 text-primary-600" />
+                </div>
                 <h3 className="text-lg font-semibold text-gray-700 mb-2">Find More Lookalikes</h3>
                 <p className="text-gray-600 mb-4">Enter a company to find similar organizations</p>
                 <div className="flex gap-3 max-w-2xl mx-auto">
@@ -1803,7 +1862,10 @@ Requirements:
         {activeTab === 'training' && (
           <div className="space-y-6 animate-fade-in">
             <div className="card bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-              <h3 className="text-xl font-bold mb-2">🎓 AI Training Ground (Admin Only)</h3>
+              <div className="flex items-center gap-3 mb-2">
+                <GraduationCap className="w-6 h-6" />
+                <h3 className="text-xl font-bold">AI Training Ground (Admin Only)</h3>
+              </div>
               <p className="opacity-90">
                 This agent continuously trains on real employer job postings to learn matching patterns.
                 Training data is NOT visible in production.
@@ -1816,73 +1878,73 @@ Requirements:
 
               {/* Phase 1: Company Identification */}
               <div className="mb-6 p-4 bg-blue-50 rounded-lg border-2 border-blue-300">
-                <h4 className="font-bold text-blue-900 mb-2">📋 Phase 1: Identify Qualified Companies (Run Once)</h4>
+                <h4 className="font-bold text-blue-900 mb-2 flex items-center gap-2"><FileText className="w-4 h-4" /> Phase 1: Identify Qualified Companies (Run Once)</h4>
                 <p className="text-sm text-blue-800 mb-3">
                   First, identify 20 companies with 500-1000 employees. This takes ~2 minutes. Run multiple times to build up to 100.
                 </p>
                 <button
                   onClick={async () => {
                     if (!confirm('This will identify 20 companies with 500-1000 employees. Takes ~2 minutes. Continue?')) return
-                    alert('⏳ Identifying companies... This will take ~2 minutes.')
+                    alert('Identifying companies... This will take ~2 minutes.')
                     const { data, error } = await supabase.functions.invoke('company-identifier', {
                       body: { action: 'identify_companies' }
                     })
                     if (error) {
-                      alert('❌ Company identification failed: ' + error.message)
+                      alert('Company identification failed: ' + error.message)
                       console.error('Error:', error)
                     } else {
                       let message = ''
                       if (data.failed > 0 && data.successfullyInserted === 0) {
-                        message = `ℹ️ All ${data.companiesIdentified} companies already exist in database. Phase 1 complete! You can proceed to Phase 2.`
+                        message = `All ${data.companiesIdentified} companies already exist in database. Phase 1 complete! You can proceed to Phase 2.`
                       } else if (data.failed > 0) {
-                        message = `⚠️ Added ${data.successfullyInserted} new companies. ${data.failed} already existed.`
+                        message = `Added ${data.successfullyInserted} new companies. ${data.failed} already existed.`
                       } else {
-                        message = `✅ Success! Added ${data.successfullyInserted} companies to database.`
+                        message = `Success! Added ${data.successfullyInserted} companies to database.`
                       }
                       alert(message + '\n\nNow you can start training with Phase 2.')
                       console.log('Companies identified:', data)
                       fetchTrainingStats() // Refresh stats
                     }
                   }}
-                  className="btn-primary"
+                  className="btn-primary flex items-center gap-2"
                 >
-                  🏢 Identify Companies (One-Time Setup)
+                  <Building2 className="w-4 h-4" /> Identify Companies (One-Time Setup)
                 </button>
               </div>
 
               {/* Phase 2: Training */}
               <div className="p-4 bg-purple-50 rounded-lg border-2 border-purple-300">
-                <h4 className="font-bold text-purple-900 mb-2">🎓 Phase 2: Start Training (After Company Identification)</h4>
+                <h4 className="font-bold text-purple-900 mb-2 flex items-center gap-2"><GraduationCap className="w-4 h-4" /> Phase 2: Start Training (After Company Identification)</h4>
                 <p className="text-sm text-purple-800 mb-3">
                   Scrape 10 jobs from pre-qualified companies. Runs every 2 hours automatically (via cron).
                 </p>
                 <div className="flex gap-4">
                   <button
                     onClick={async () => {
-                      alert('⏳ Starting training batch... This will take ~2 minutes.')
+                      alert('Starting training batch... This will take ~2 minutes.')
                       const { data, error } = await supabase.functions.invoke('training-scheduler')
                       if (error) {
-                        alert('❌ Training start failed: ' + error.message + '\nMake sure you ran Phase 1 first!')
+                        alert('Training start failed: ' + error.message + '\nMake sure you ran Phase 1 first!')
                         console.error('Error:', error)
                       } else {
-                        alert('✅ Training batch complete! Scraped ' + (data?.scraped || 0) + ' jobs. Total: ' + (data?.totalJobs || 0))
+                        alert('Training batch complete! Scraped ' + (data?.scraped || 0) + ' jobs. Total: ' + (data?.totalJobs || 0))
                         console.log('Training result:', data)
                         fetchJobs() // Refresh job list
                         fetchTrainingStats() // Refresh stats
                       }
                     }}
-                    className="btn-primary"
+                    className="btn-primary flex items-center gap-2"
                   >
-                    🚀 Start Training Batch (10 jobs)
+                    <Zap className="w-4 h-4" /> Start Training Batch (10 jobs)
                   </button>
                   <button
                     onClick={() => {
                       fetchJobs()
                       fetchTrainingStats()
                     }}
-                    className="btn-secondary"
+                    className="btn-secondary flex items-center gap-2"
                   >
-                    🔄 Refresh Progress
+                    <RefreshCw className="w-4 h-4" /> Refresh Progress
                   </button>
                 </div>
               </div>
@@ -1966,7 +2028,7 @@ Requirements:
                           rel="noopener noreferrer"
                           className="text-xs text-primary-600 hover:underline mt-2 inline-flex items-center gap-1"
                         >
-                          <span>🔗</span>
+                          <ExternalLink className="w-3 h-3" />
                           <span>View Original Posting</span>
                         </a>
                       </div>
@@ -2058,7 +2120,9 @@ Requirements:
             {/* Admin Notice */}
             <div className="card bg-red-50 border-2 border-red-300">
               <div className="flex items-start gap-3">
-                <span className="text-2xl">⚠️</span>
+                <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <AlertTriangle className="w-5 h-5 text-red-600" />
+                </div>
                 <div>
                   <h4 className="font-bold text-red-900 mb-1">Admin Only - Not Visible in Production</h4>
                   <p className="text-sm text-red-800">
