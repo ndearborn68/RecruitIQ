@@ -437,13 +437,6 @@ function App() {
   const [analysisStage, setAnalysisStage] = useState('')
   const [analysisResults, setAnalysisResults] = useState<any>(null)
 
-  // Training Ground state
-  const [trainingStats, setTrainingStats] = useState({
-    jobsScraped: 0,
-    companiesDiscovered: 0,
-    uniquePhrases: 0,
-    locationsAnalyzed: 0
-  })
 
   // Fetch jobs from Supabase
   const fetchJobs = async () => {
@@ -464,44 +457,9 @@ function App() {
     }
   }
 
-  // Fetch training stats
-  const fetchTrainingStats = async () => {
-    try {
-      // Get count of jobs scraped
-      const { count: jobCount, error: jobError } = await supabase
-        .from('jobs')
-        .select('*', { count: 'exact', head: true })
-
-      // Get count of qualified companies
-      const { count: companyCount, error: companyError } = await supabase
-        .from('qualified_companies')
-        .select('*', { count: 'exact', head: true })
-
-      // Get unique locations count
-      const { data: locations, error: locationError } = await supabase
-        .from('jobs')
-        .select('location')
-        .not('location', 'is', null)
-
-      const uniqueLocations = new Set(locations?.map(j => j.location) || []).size
-
-      if (!jobError && !companyError && !locationError) {
-        setTrainingStats({
-          jobsScraped: jobCount || 0,
-          companiesDiscovered: companyCount || 0,
-          uniquePhrases: Math.floor((jobCount || 0) * 0.3), // Estimate based on job count
-          locationsAnalyzed: uniqueLocations
-        })
-      }
-    } catch (error) {
-      console.error('Error fetching training stats:', error)
-    }
-  }
-
   // Fetch jobs on mount
   useEffect(() => {
     fetchJobs()
-    fetchTrainingStats()
   }, [])
 
   // Reverse Engineering Analysis Function
@@ -594,20 +552,18 @@ function App() {
 
         <nav className="mt-6 px-4 space-y-1">
           {[
-            { id: 'overview', label: 'Overview', icon: '📊' },
-            { id: 'leads', label: 'Lead Intelligence', icon: '🎯' },
-            { id: 'recruiter-ratio', label: 'Recruiter Analysis', icon: '👥' },
-            { id: 'training', label: 'Training Ground', icon: '🎓' },
-            { id: 'analytics', label: 'Talent Analytics', icon: '📈' },
-            { id: 'funding', label: 'Funding Events', icon: '💰' },
-            { id: 'icp', label: 'ICP Lookalikes', icon: '🎭' }
+            { id: 'overview', label: 'Overview' },
+            { id: 'leads', label: 'Lead Intelligence' },
+            { id: 'recruiter-ratio', label: 'Recruiter Analysis' },
+            { id: 'analytics', label: 'Talent Analytics' },
+            { id: 'funding', label: 'Funding Events' },
+            { id: 'icp', label: 'ICP Lookalikes' }
           ].map(item => (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
               className={`sidebar-nav-item ${activeTab === item.id ? 'sidebar-nav-item-active' : ''}`}
             >
-              <span className="text-xl">{item.icon}</span>
               <span>{item.label}</span>
             </button>
           ))}
@@ -627,7 +583,6 @@ function App() {
               {activeTab === 'analytics' && 'Talent Analytics'}
               {activeTab === 'funding' && 'Funding Events'}
               {activeTab === 'icp' && 'ICP Lookalike Companies'}
-              {activeTab === 'training' && 'Training Ground'}
             </h2>
             <div className="flex items-center gap-3 mt-2">
               <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -1799,278 +1754,6 @@ Requirements:
           </div>
         )}
 
-        {/* Training Ground Tab (Admin Only) */}
-        {activeTab === 'training' && (
-          <div className="space-y-6 animate-fade-in">
-            <div className="card bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-              <h3 className="text-xl font-bold mb-2">🎓 AI Training Ground (Admin Only)</h3>
-              <p className="opacity-90">
-                This agent continuously trains on real employer job postings to learn matching patterns.
-                Training data is NOT visible in production.
-              </p>
-            </div>
-
-            {/* Training Controls */}
-            <div className="card">
-              <h3 className="text-2xl font-bold text-gray-800 mb-4">Training Controls</h3>
-
-              {/* Phase 1: Company Identification */}
-              <div className="mb-6 p-4 bg-blue-50 rounded-lg border-2 border-blue-300">
-                <h4 className="font-bold text-blue-900 mb-2">📋 Phase 1: Identify Qualified Companies (Run Once)</h4>
-                <p className="text-sm text-blue-800 mb-3">
-                  First, identify 20 companies with 500-1000 employees. This takes ~2 minutes. Run multiple times to build up to 100.
-                </p>
-                <button
-                  onClick={async () => {
-                    if (!confirm('This will identify 20 companies with 500-1000 employees. Takes ~2 minutes. Continue?')) return
-                    alert('⏳ Identifying companies... This will take ~2 minutes.')
-                    const { data, error } = await supabase.functions.invoke('company-identifier', {
-                      body: { action: 'identify_companies' }
-                    })
-                    if (error) {
-                      alert('❌ Company identification failed: ' + error.message)
-                      console.error('Error:', error)
-                    } else {
-                      let message = ''
-                      if (data.failed > 0 && data.successfullyInserted === 0) {
-                        message = `ℹ️ All ${data.companiesIdentified} companies already exist in database. Phase 1 complete! You can proceed to Phase 2.`
-                      } else if (data.failed > 0) {
-                        message = `⚠️ Added ${data.successfullyInserted} new companies. ${data.failed} already existed.`
-                      } else {
-                        message = `✅ Success! Added ${data.successfullyInserted} companies to database.`
-                      }
-                      alert(message + '\n\nNow you can start training with Phase 2.')
-                      console.log('Companies identified:', data)
-                      fetchTrainingStats() // Refresh stats
-                    }
-                  }}
-                  className="btn-primary"
-                >
-                  🏢 Identify Companies (One-Time Setup)
-                </button>
-              </div>
-
-              {/* Phase 2: Training */}
-              <div className="p-4 bg-purple-50 rounded-lg border-2 border-purple-300">
-                <h4 className="font-bold text-purple-900 mb-2">🎓 Phase 2: Start Training (After Company Identification)</h4>
-                <p className="text-sm text-purple-800 mb-3">
-                  Scrape 10 jobs from pre-qualified companies. Runs every 2 hours automatically (via cron).
-                </p>
-                <div className="flex gap-4">
-                  <button
-                    onClick={async () => {
-                      alert('⏳ Starting training batch... This will take ~2 minutes.')
-                      const { data, error } = await supabase.functions.invoke('training-scheduler')
-                      if (error) {
-                        alert('❌ Training start failed: ' + error.message + '\nMake sure you ran Phase 1 first!')
-                        console.error('Error:', error)
-                      } else {
-                        alert('✅ Training batch complete! Scraped ' + (data?.scraped || 0) + ' jobs. Total: ' + (data?.totalJobs || 0))
-                        console.log('Training result:', data)
-                        fetchJobs() // Refresh job list
-                        fetchTrainingStats() // Refresh stats
-                      }
-                    }}
-                    className="btn-primary"
-                  >
-                    🚀 Start Training Batch (10 jobs)
-                  </button>
-                  <button
-                    onClick={() => {
-                      fetchJobs()
-                      fetchTrainingStats()
-                    }}
-                    className="btn-secondary"
-                  >
-                    🔄 Refresh Progress
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Training Progress */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="card card-hover bg-gradient-to-br from-purple-500 to-purple-600 text-white">
-                <div className="text-sm font-medium opacity-90">Jobs Scraped</div>
-                <div className="text-4xl font-bold mt-2">{trainingStats.jobsScraped.toLocaleString()}</div>
-                <div className="text-sm mt-2 opacity-80">Target: 1,000</div>
-              </div>
-
-              <div className="card card-hover bg-gradient-to-br from-pink-500 to-pink-600 text-white">
-                <div className="text-sm font-medium opacity-90">Companies Discovered</div>
-                <div className="text-4xl font-bold mt-2">{trainingStats.companiesDiscovered.toLocaleString()}</div>
-                <div className="text-sm mt-2 opacity-80">Learning patterns...</div>
-              </div>
-
-              <div className="card card-hover bg-gradient-to-br from-indigo-500 to-indigo-600 text-white">
-                <div className="text-sm font-medium opacity-90">Unique Phrases</div>
-                <div className="text-4xl font-bold mt-2">{trainingStats.uniquePhrases.toLocaleString()}</div>
-                <div className="text-sm mt-2 opacity-80">Signature patterns</div>
-              </div>
-
-              <div className="card card-hover bg-gradient-to-br from-blue-500 to-blue-600 text-white">
-                <div className="text-sm font-medium opacity-90">Locations Analyzed</div>
-                <div className="text-4xl font-bold mt-2">{trainingStats.locationsAnalyzed.toLocaleString()}</div>
-                <div className="text-sm mt-2 opacity-80">Hub intelligence</div>
-              </div>
-            </div>
-
-            {/* Training Status */}
-            <div className="card">
-              <h3 className="text-xl font-bold text-gray-800 mb-4">Current Training Status</h3>
-              <div className="bg-gray-100 p-4 rounded-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-semibold">Status:</span>
-                  <span className={`badge ${trainingStats.jobsScraped > 0 ? 'badge-success' : 'badge-warning'}`}>
-                    {trainingStats.jobsScraped > 0 ? 'Training Active' : 'Ready to Train'}
-                  </span>
-                </div>
-                <div className="w-full bg-gray-300 rounded-full h-4 mb-2">
-                  <div
-                    className="bg-gradient-to-r from-purple-500 to-pink-500 h-4 rounded-full transition-all duration-500"
-                    style={{ width: `${Math.min((trainingStats.jobsScraped / 1000) * 100, 100)}%` }}
-                  ></div>
-                </div>
-                <p className="text-sm text-gray-600">
-                  {trainingStats.jobsScraped === 0
-                    ? 'No training data yet. Run Phase 1 first, then start Phase 2 to begin scraping jobs.'
-                    : `Progress: ${trainingStats.jobsScraped} / 1,000 jobs scraped (${((trainingStats.jobsScraped / 1000) * 100).toFixed(1)}%)`
-                  }
-                </p>
-              </div>
-            </div>
-
-            {/* Sample Training Data */}
-            <div className="card">
-              <h3 className="text-xl font-bold text-gray-800 mb-4">Sample Training Data</h3>
-              <p className="text-gray-600 mb-4">Recent job postings the agent has learned from:</p>
-              <div className="bg-gray-50 p-4 rounded-lg text-sm">
-                {liveJobs.length === 0 ? (
-                  <p className="text-gray-500 font-mono">No training data yet. Start a training batch to see results here.</p>
-                ) : (
-                  <div className="space-y-3">
-                    {liveJobs.slice(0, 5).map((job) => (
-                      <div key={job.id} className="bg-white p-3 rounded border-l-4 border-purple-500">
-                        <div className="flex justify-between items-start mb-2">
-                          <div className="font-semibold text-gray-800">{job.job_title}</div>
-                          <span className="text-xs badge badge-primary">{job.vertical}</span>
-                        </div>
-                        <div className="text-xs text-gray-600">
-                          <div><strong>{job.company_name}</strong> • {job.location}</div>
-                          <div className="mt-1">Employees: {job.employee_count}</div>
-                          <div className="mt-1 text-gray-500">Scraped: {new Date(job.last_verified).toLocaleDateString()}</div>
-                        </div>
-                        <a
-                          href={job.job_link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs text-primary-600 hover:underline mt-2 inline-flex items-center gap-1"
-                        >
-                          <span>🔗</span>
-                          <span>View Original Posting</span>
-                        </a>
-                      </div>
-                    ))}
-                    {liveJobs.length > 5 && (
-                      <p className="text-xs text-gray-500 text-center pt-2">
-                        Showing 5 of {liveJobs.length} total jobs
-                      </p>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Learned Intelligence */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="card">
-                <h3 className="text-xl font-bold text-gray-800 mb-4">Industry Distribution</h3>
-                <p className="text-sm text-gray-600 mb-4">Jobs scraped by vertical:</p>
-                <div className="space-y-2">
-                  {liveJobs.length > 0 ? (
-                    <>
-                      {Object.entries(
-                        liveJobs.reduce((acc, job) => {
-                          acc[job.vertical] = (acc[job.vertical] || 0) + 1
-                          return acc
-                        }, {} as Record<string, number>)
-                      )
-                        .sort(([, a], [, b]) => b - a)
-                        .map(([vertical, count]) => (
-                          <div key={vertical} className="bg-purple-50 p-3 rounded border-l-4 border-purple-500">
-                            <div className="flex justify-between items-center">
-                              <div className="font-semibold text-gray-800">{vertical}</div>
-                              <div className="text-sm font-bold text-purple-700">{count} jobs</div>
-                            </div>
-                            <div className="w-full bg-purple-200 rounded-full h-2 mt-2">
-                              <div
-                                className="bg-purple-600 h-2 rounded-full"
-                                style={{ width: `${(count / liveJobs.length) * 100}%` }}
-                              ></div>
-                            </div>
-                          </div>
-                        ))}
-                    </>
-                  ) : (
-                    <div className="text-sm text-gray-500 italic">
-                      No data yet. Start training to see industry distribution.
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="card">
-                <h3 className="text-xl font-bold text-gray-800 mb-4">Location Intelligence</h3>
-                <p className="text-sm text-gray-600 mb-4">Geographic patterns from training:</p>
-                <div className="space-y-2">
-                  {liveJobs.length > 0 ? (
-                    <>
-                      {Object.entries(
-                        liveJobs.reduce((acc, job) => {
-                          const loc = job.location || 'Unknown'
-                          acc[loc] = (acc[loc] || 0) + 1
-                          return acc
-                        }, {} as Record<string, number>)
-                      )
-                        .sort(([, a], [, b]) => b - a)
-                        .slice(0, 5)
-                        .map(([location, count]) => (
-                          <div key={location} className="bg-green-50 p-3 rounded border-l-4 border-green-500">
-                            <div className="flex justify-between items-center">
-                              <div className="font-semibold text-gray-800">{location}</div>
-                              <div className="text-sm font-bold text-green-700">{count} jobs</div>
-                            </div>
-                            <div className="text-xs text-gray-600 mt-1">
-                              {Math.round((count / liveJobs.length) * 100)}% of total jobs
-                            </div>
-                          </div>
-                        ))}
-                    </>
-                  ) : (
-                    <div className="text-sm text-gray-500 italic">
-                      No data yet. Start training to see location patterns.
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Admin Notice */}
-            <div className="card bg-red-50 border-2 border-red-300">
-              <div className="flex items-start gap-3">
-                <span className="text-2xl">⚠️</span>
-                <div>
-                  <h4 className="font-bold text-red-900 mb-1">Admin Only - Not Visible in Production</h4>
-                  <p className="text-sm text-red-800">
-                    This Training Ground tab is only visible to you (localhost). When deployed, this tab will be hidden.
-                    The background training agent will continue to run and improve the reverse engineering accuracy,
-                    but users won't see this data.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   )
