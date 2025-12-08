@@ -553,6 +553,7 @@ function App() {
         <nav className="mt-6 px-4 space-y-1">
           {[
             { id: 'overview', label: 'Overview' },
+            { id: 'reverse', label: 'Reverse Engineering' },
             { id: 'leads', label: 'Lead Intelligence' },
             { id: 'recruiter-ratio', label: 'Recruiter Analysis' },
             { id: 'analytics', label: 'Talent Analytics' },
@@ -1288,15 +1289,32 @@ function App() {
           </div>
         )}
 
-        {/* Reverse Engineering Tab - REMOVED */}
-        {false && activeTab === 'reverse' && (
+        {/* Reverse Engineering Tab - AI-Powered Job Analysis */}
+        {activeTab === 'reverse' && (
           <div className="space-y-6 animate-fade-in">
             <div className="card bg-gradient-to-r from-primary-500 to-accent-500 text-white">
-              <h3 className="text-xl font-bold mb-2">🔍 AI-Powered Job Reverse Engineering</h3>
-              <p className="opacity-90">
-                Our AI agent analyzes competitor staffing agency job posts to identify the real end client by cross-referencing
-                language, location, job descriptions, and duties across the web.
+              <h3 className="text-xl font-bold mb-2">AI-Powered Job Reverse Engineering</h3>
+              <p className="opacity-90 mb-4">
+                Our AI agent uses real-time web search and extended thinking to analyze competitor staffing agency job posts
+                and identify the real end client with high accuracy.
               </p>
+              <div className="grid grid-cols-3 gap-4 mt-4">
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3">
+                  <div className="text-2xl mb-1">🔍</div>
+                  <div className="font-semibold">Live Web Search</div>
+                  <div className="text-xs opacity-80">Searches career pages, tech blogs, and company sites in real-time</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3">
+                  <div className="text-2xl mb-1">🧠</div>
+                  <div className="font-semibold">Extended Thinking</div>
+                  <div className="text-xs opacity-80">Deep analysis with 10,000+ token thinking budget</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3">
+                  <div className="text-2xl mb-1">🎯</div>
+                  <div className="font-semibold">High Accuracy</div>
+                  <div className="text-xs opacity-80">Cross-references multiple sources for confident matches</div>
+                </div>
+              </div>
             </div>
 
             <div className="card">
